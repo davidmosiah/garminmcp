@@ -1,6 +1,6 @@
 {
   "name": "garmin-mcp-unofficial",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unofficial local-first Garmin MCP server for AI health, sleep and activity agents.",
   "type": "module",
   "bin": {
@@ -75,7 +75,7 @@
   "bugs": {
     "url": "https://github.com/davidmosiah/garminmcp/issues"
   },
-  "homepage": "https://garminmcp.vercel.app/",
+  "homepage": "https://garminconnectmcp.vercel.app/",
   "mcpName": "io.github.davidmosiah/garminmcp",
   "publishConfig": {
     "access": "public",

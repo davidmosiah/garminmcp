@@ -1,6 +1,6 @@
 Project: Garmin MCP Unofficial
 Repository: https://github.com/davidmosiah/garminmcp
-Docs: https://garminmcp.vercel.app/
+Docs: https://garminconnectmcp.vercel.app/
 Package: garmin-mcp-unofficial
 Install: npx -y garmin-mcp-unofficial setup
 Auth: npx -y garmin-mcp-unofficial auth --install-helper

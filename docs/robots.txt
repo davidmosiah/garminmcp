@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://garminmcp.vercel.app/sitemap.xml
+Sitemap: https://garminconnectmcp.vercel.app/sitemap.xml

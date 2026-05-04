@@ -108,7 +108,7 @@ npm run build
 
 ## Links
 
-- Docs: https://garminmcp.vercel.app/
+- Docs: https://garminconnectmcp.vercel.app/
 - GitHub: https://github.com/davidmosiah/garminmcp
 - npm: https://www.npmjs.com/package/garmin-mcp-unofficial
 - Garmin Health API program: https://developer.garmin.com/gc-developer-program/health-api/

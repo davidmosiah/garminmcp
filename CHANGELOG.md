@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Updated public docs URL to https://garminconnectmcp.vercel.app after Vercel alias assignment.
+
 ## 0.1.0
 
 - Initial Garmin MCP Unofficial release.
