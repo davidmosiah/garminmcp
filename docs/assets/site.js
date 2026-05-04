@@ -12,7 +12,13 @@ if ('IntersectionObserver' in window) {
   }, { threshold: 0.12, rootMargin: '0px 0px -80px 0px' });
   revealItems.forEach((item) => {
     item.setAttribute('data-reveal', '');
-    observer.observe(item);
+    const rect = item.getBoundingClientRect();
+    const alreadyVisible = rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
+    if (alreadyVisible) {
+      item.classList.add('is-visible');
+    } else {
+      observer.observe(item);
+    }
   });
 } else {
   revealItems.forEach((item) => item.classList.add('is-visible'));
