@@ -50,10 +50,14 @@ export async function runAuthCommand(args: string[]): Promise<number> {
     };
     if (json) console.log(JSON.stringify(output, null, 2));
     else {
-      console.log("Garmin connected successfully.");
-      console.log(`Token file: ${output.token_path}`);
-      console.log(`Permissions: ${output.permissions}`);
-      console.log(output.next_step);
+      console.log("");
+      console.log("✓ Garmin connected");
+      console.log("");
+      console.log(`  Token file:   ${output.token_path}`);
+      console.log(`  Permissions:  ${output.permissions}`);
+      if (output.display_name) console.log(`  Display name: ${output.display_name}`);
+      console.log("");
+      console.log(`→ Next: ${output.next_step}`);
     }
     return 0;
   } catch (error) {

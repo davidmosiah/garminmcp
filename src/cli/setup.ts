@@ -51,12 +51,14 @@ export async function runSetupCommand(args: string[]): Promise<number> {
 
   if (options.json) console.log(JSON.stringify(setupOutput, null, 2));
   else {
-    console.log("garmin-mcp setup saved.");
-    console.log(`Local config: ${configPath}`);
-    console.log(`MCP client config: ${clientConfig.path}`);
-    if (clientConfig.hermes_skill_path) console.log(`Hermes skill: ${clientConfig.hermes_skill_path}`);
+    console.log("Garmin MCP · Setup");
+    console.log("");
+    console.log(`  ✓  Local config       ${configPath}`);
+    console.log(`  ✓  MCP client config  ${clientConfig.path}`);
+    if (clientConfig.hermes_skill_path) console.log(`  ✓  Hermes skill       ${clientConfig.hermes_skill_path}`);
+    console.log("");
     console.log("No Garmin password or token was saved in MCP client config.");
-    console.log(setupOutput.next_step);
+    console.log(`→ Next: ${setupOutput.next_step}`);
   }
 
   if (!options.noAuth) {

@@ -230,22 +230,22 @@ export function registerGarminTools(server: McpServer): void {
 
   registerDateTool(server, "garmin_get_daily_summary", "Garmin Daily Summary Raw", async (garmin, date) => `/usersummary-service/usersummary/daily/${await displayName(garmin)}?calendarDate=${date}`, "Get Garmin daily movement and wellness summary for a date.");
   registerDateTool(server, "garmin_get_steps_day", "Garmin Daily Steps Chart", async (garmin, date) => `/wellness-service/wellness/dailySummaryChart/${await displayName(garmin)}?date=${date}`, "Get Garmin daily steps and summary chart for a date.");
-  registerDateTool(server, "garmin_get_heart_day", "Garmin Daily Heart Rate", async (garmin, date) => `/wellness-service/wellness/dailyHeartRate/${await displayName(garmin)}?date=${date}`, "Get Garmin daily heart-rate samples and resting heart-rate context for a date.");
-  registerDateTool(server, "garmin_get_sleep_day", "Garmin Daily Sleep", async (garmin, date) => `/wellness-service/wellness/dailySleepData/${await displayName(garmin)}?date=${date}&nonSleepBufferMinutes=60`, "Get Garmin sleep summary, stages and sleep window for a date.");
-  registerDateTool(server, "garmin_get_stress_day", "Garmin Daily Stress", (_garmin, date) => `/wellness-service/wellness/dailyStress/${date}`, "Get Garmin stress summary and samples for a date.");
-  registerDateTool(server, "garmin_get_body_battery_day", "Garmin Body Battery", (_garmin, date) => `/wellness-service/wellness/bodyBattery/reports/daily/${date}`, "Get Garmin Body Battery daily report for a date.");
-  registerDateTool(server, "garmin_get_body_battery_events", "Garmin Body Battery Events", (_garmin, date) => `/wellness-service/wellness/bodyBattery/events/${date}`, "Get Garmin Body Battery charge/drain events for a date.");
-  registerDateTool(server, "garmin_get_hrv_day", "Garmin HRV", (_garmin, date) => `/hrv-service/hrv/${date}`, "Get Garmin HRV status and overnight HRV metrics for a date when available.");
-  registerDateTool(server, "garmin_get_training_readiness_day", "Garmin Training Readiness", (_garmin, date) => `/metrics-service/metrics/trainingreadiness/${date}`, "Get Garmin training readiness for a date when supported by the device/account.");
-  registerDateTool(server, "garmin_get_training_status_day", "Garmin Training Status", (_garmin, date) => `/metrics-service/metrics/trainingstatus/aggregated/${date}`, "Get Garmin aggregated training status for a date when supported by the device/account.");
-  registerDateTool(server, "garmin_get_respiration_day", "Garmin Respiration", (_garmin, date) => `/wellness-service/wellness/daily/respiration/${date}`, "Get Garmin respiration data for a date when available.");
-  registerDateTool(server, "garmin_get_spo2_day", "Garmin SpO2", (_garmin, date) => `/wellness-service/wellness/daily/spo2/${date}`, "Get Garmin Pulse Ox / SpO2 data for a date when available.");
+  registerDateTool(server, "garmin_get_heart_day", "Garmin Daily Heart Rate", async (garmin, date) => `/wellness-service/wellness/dailyHeartRate/${await displayName(garmin)}?date=${date}`, "Get Garmin daily heart-rate samples and resting heart-rate context for a date. Not medical advice.");
+  registerDateTool(server, "garmin_get_sleep_day", "Garmin Daily Sleep", async (garmin, date) => `/wellness-service/wellness/dailySleepData/${await displayName(garmin)}?date=${date}&nonSleepBufferMinutes=60`, "Get Garmin sleep summary, stages and sleep window for a date. Not medical advice.");
+  registerDateTool(server, "garmin_get_stress_day", "Garmin Daily Stress", (_garmin, date) => `/wellness-service/wellness/dailyStress/${date}`, "Get Garmin stress summary and samples for a date. Not medical advice.");
+  registerDateTool(server, "garmin_get_body_battery_day", "Garmin Body Battery", (_garmin, date) => `/wellness-service/wellness/bodyBattery/reports/daily/${date}`, "Get Garmin Body Battery daily report for a date. Not medical advice.");
+  registerDateTool(server, "garmin_get_body_battery_events", "Garmin Body Battery Events", (_garmin, date) => `/wellness-service/wellness/bodyBattery/events/${date}`, "Get Garmin Body Battery charge/drain events for a date. Not medical advice.");
+  registerDateTool(server, "garmin_get_hrv_day", "Garmin HRV", (_garmin, date) => `/hrv-service/hrv/${date}`, "Get Garmin HRV status and overnight HRV metrics for a date when available. Not medical advice.");
+  registerDateTool(server, "garmin_get_training_readiness_day", "Garmin Training Readiness", (_garmin, date) => `/metrics-service/metrics/trainingreadiness/${date}`, "Get Garmin training readiness for a date when supported by the device/account. Not medical advice.");
+  registerDateTool(server, "garmin_get_training_status_day", "Garmin Training Status", (_garmin, date) => `/metrics-service/metrics/trainingstatus/aggregated/${date}`, "Get Garmin aggregated training status for a date when supported by the device/account. Not medical advice.");
+  registerDateTool(server, "garmin_get_respiration_day", "Garmin Respiration", (_garmin, date) => `/wellness-service/wellness/daily/respiration/${date}`, "Get Garmin respiration data for a date when available. Not medical advice.");
+  registerDateTool(server, "garmin_get_spo2_day", "Garmin SpO2", (_garmin, date) => `/wellness-service/wellness/daily/spo2/${date}`, "Get Garmin Pulse Ox / SpO2 data for a date when available. Not medical advice.");
   registerDateTool(server, "garmin_get_intensity_minutes_day", "Garmin Intensity Minutes", (_garmin, date) => `/wellness-service/wellness/daily/im/${date}`, "Get Garmin intensity minutes for a date.");
   registerDateTool(server, "garmin_get_hydration_day", "Garmin Hydration", async (garmin, date) => `/usersummary-service/usersummary/hydration/daily/${await displayName(garmin)}?calendarDate=${date}`, "Get Garmin hydration summary for a date when available.");
 
   server.registerTool("garmin_get_weight_range", {
     title: "Garmin Weight Range",
-    description: "Get Garmin weight/body-composition logs for a date range.",
+    description: "Get Garmin weight/body-composition logs for a date range. Not medical advice.",
     inputSchema: WeightRangeInputSchema.shape,
     outputSchema: EndpointDataOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
