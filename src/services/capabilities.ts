@@ -1,4 +1,4 @@
-import { GARMIN_CONNECT_PERSONAL_BOUNDARY, GARMIN_DEVELOPER_PORTAL_URL } from "../constants.js";
+import { GARMIN_CONNECT_PERSONAL_BOUNDARY, GARMIN_DEVELOPER_PORTAL_URL, GARMIN_MCP_DOCS_URL } from "../constants.js";
 
 export function buildCapabilities() {
   return {
@@ -63,7 +63,7 @@ export function buildCapabilities() {
     ],
     links: {
       github: "https://github.com/davidmosiah/garminmcp",
-      docs: "https://garminmcp.vercel.app/",
+      docs: GARMIN_MCP_DOCS_URL,
       npm: "https://www.npmjs.com/package/garmin-mcp-unofficial",
       garmin_developer_program: GARMIN_DEVELOPER_PORTAL_URL,
       garmin_health_api: "https://developer.garmin.com/gc-developer-program/health-api/",

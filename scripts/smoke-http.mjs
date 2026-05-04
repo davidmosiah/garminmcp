@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import http from 'node:http';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
 const port = String(43000 + Math.floor(Math.random() * 1000));
+const endpoint = `http://127.0.0.1:${port}/mcp`;
 const child = spawn(process.execPath, ['dist/index.js', '--http'], {
   env: { ...process.env, GARMIN_MCP_PORT: port, GARMIN_MCP_HOST: '127.0.0.1' },
   stdio: ['ignore', 'ignore', 'pipe']
@@ -44,7 +47,19 @@ try {
     }
   }
   if (!ok) throw new Error(`HTTP server did not become healthy. stderr=${stderr}`);
-  console.log(JSON.stringify({ ok: true, transport: 'http', port: Number(port) }, null, 2));
+
+  const client = new Client({ name: 'Garmin MCP-http-smoke-test', version: '0.0.0' });
+  const transport = new StreamableHTTPClientTransport(new URL(endpoint));
+  try {
+    await client.connect(transport);
+    const tools = await client.listTools();
+    assert.ok(tools.tools.some((tool) => tool.name === 'garmin_capabilities'));
+    const capabilities = await client.callTool({ name: 'garmin_capabilities', arguments: { response_format: 'json' } });
+    assert.equal(capabilities.structuredContent?.links?.docs, 'https://garminconnectmcp.vercel.app/');
+    console.log(JSON.stringify({ ok: true, transport: 'http', port: Number(port), endpoint: '/mcp', tools: tools.tools.length }, null, 2));
+  } finally {
+    await client.close().catch(() => undefined);
+  }
 } finally {
   child.kill('SIGTERM');
 }

@@ -18,6 +18,7 @@ const expectedTools = [
 
 const expectedResources = ['garmin://agent-manifest', 'garmin://capabilities', 'garmin://latest/activity', 'garmin://profile', 'garmin://summary/daily', 'garmin://summary/weekly'];
 const expectedPrompts = ['garmin_daily_checkin', 'garmin_intraday_investigation', 'garmin_weekly_review'];
+const expectedDocsUrl = 'https://garminconnectmcp.vercel.app/';
 const home = mkdtempSync(join(tmpdir(), 'Garmin MCP-smoke-home-'));
 
 const client = new Client({ name: 'Garmin MCP-smoke-test', version: '0.0.0' });
@@ -45,6 +46,7 @@ try {
 
   const capabilitiesResult = await client.callTool({ name: 'garmin_capabilities', arguments: { response_format: 'json' } });
   assert.equal(capabilitiesResult.structuredContent?.unofficial, true);
+  assert.equal(capabilitiesResult.structuredContent?.links?.docs, expectedDocsUrl);
   assert.ok(capabilitiesResult.structuredContent?.api_boundary?.does_not_include?.includes('raw accelerometer or gyroscope telemetry'));
   assert.ok(capabilitiesResult.structuredContent?.recommended_agent_flow?.some((step) => step.includes('garmin_connection_status')));
 
@@ -55,6 +57,7 @@ try {
   const manifestResult = await client.callTool({ name: 'garmin_agent_manifest', arguments: { client: 'hermes', response_format: 'json' } });
   assert.equal(manifestResult.structuredContent?.client, 'hermes');
   assert.equal(manifestResult.structuredContent?.auth?.provider, 'Garmin Connect');
+  assert.equal(manifestResult.structuredContent?.links?.docs, expectedDocsUrl);
   assert.ok(manifestResult.structuredContent?.hermes?.common_tool_names?.includes('mcp_garmin_garmin_connection_status'));
   assert.equal(manifestResult.structuredContent?.hermes?.no_gateway_restart_for_data_access, true);
 

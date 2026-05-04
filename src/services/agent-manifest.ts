@@ -1,4 +1,4 @@
-import { GARMIN_CONNECT_PERSONAL_BOUNDARY, NPM_PACKAGE_NAME, PINNED_NPM_PACKAGE, SERVER_VERSION } from "../constants.js";
+import { GARMIN_CONNECT_PERSONAL_BOUNDARY, GARMIN_MCP_DOCS_URL, NPM_PACKAGE_NAME, PINNED_NPM_PACKAGE, SERVER_VERSION } from "../constants.js";
 
 export const AGENT_CLIENTS = ["generic", "claude", "cursor", "windsurf", "hermes", "openclaw"] as const;
 export type AgentClientName = typeof AGENT_CLIENTS[number];
@@ -112,7 +112,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
     ],
     links: {
       github: "https://github.com/davidmosiah/garminmcp",
-      docs: "https://garminmcp.vercel.app/",
+      docs: GARMIN_MCP_DOCS_URL,
       npm: "https://www.npmjs.com/package/garmin-mcp-unofficial",
       garmin_connect: "https://connect.garmin.com/",
       garmin_health_api: "https://developer.garmin.com/gc-developer-program/health-api/"

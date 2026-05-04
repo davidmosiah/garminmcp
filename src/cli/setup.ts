@@ -196,7 +196,7 @@ function writeHermesClientConfig(homeDir: string): ClientConfigResult {
 function mergeHermesConfig(configPath: string): string | undefined {
   const snippet = hermesConfigSnippet();
   if (!existsSync(configPath)) {
-    writeFileSync(configPath, `${snippet}\n`, { mode: 0o600 });
+    writeFileSync(configPath, ensureReloadHint(snippet), { mode: 0o600 });
     chmodSync(configPath, 0o600);
     return undefined;
   }

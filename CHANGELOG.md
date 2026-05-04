@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Fixed agent-facing docs links to use `https://garminconnectmcp.vercel.app/`.
+- Made new Hermes setup configs include `approvals.mcp_reload_confirm: false` by default.
+- Expanded HTTP smoke coverage to exercise the real MCP `/mcp` protocol, not only `/health`.
+
 ## 0.1.3
 
 - Made `setup` non-interactive with respect to Garmin login by default; use `setup --auth` to start auth immediately.

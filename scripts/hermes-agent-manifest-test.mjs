@@ -8,6 +8,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const pinnedPackage = `garmin-mcp-unofficial@${packageJson.version}`;
+const expectedDocsUrl = 'https://garminconnectmcp.vercel.app/';
 const dir = mkdtempSync(join(tmpdir(), 'Garmin MCP-hermes-agent-'));
 
 const client = new Client({ name: 'Garmin MCP-hermes-agent-test', version: '0.0.0' });
@@ -35,6 +36,7 @@ try {
   assert.equal(manifest.hermes.tool_name_prefix, 'mcp_garmin_');
   assert.equal(manifest.hermes.no_gateway_restart_for_data_access, true);
   assert.match(manifest.hermes.reload_after_config_change, /\/reload-mcp/);
+  assert.equal(manifest.links.docs, expectedDocsUrl);
   assert.ok(manifest.hermes.common_tool_names.includes('mcp_garmin_garmin_connection_status'));
   assert.ok(JSON.stringify(manifest.hermes.recommended_config).includes(pinnedPackage));
   assert.ok(manifest.agent_rules.some((rule) => /do not restart/i.test(rule)));
@@ -66,6 +68,7 @@ try {
 
   const hermesConfig = readFileSync(setupPayload.client_config_path, 'utf8');
   assert.match(hermesConfig, new RegExp(pinnedPackage.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(hermesConfig, /approvals:\s*\n\s*mcp_reload_confirm:\s*false/);
   assert.match(readFileSync(setupPayload.hermes_skill_path, 'utf8'), /mcp_garmin_garmin_connection_status/);
 
   const doctor = spawnSync(process.execPath, ['dist/index.js', 'doctor', '--client', 'hermes', '--json'], {
@@ -78,6 +81,7 @@ try {
   assert.equal(doctorPayload.client_checks.hermes.config_exists, true);
   assert.equal(doctorPayload.client_checks.hermes.garmin_server_configured, true);
   assert.equal(doctorPayload.client_checks.hermes.package_pinned, true);
+  assert.equal(doctorPayload.client_checks.hermes.mcp_reload_confirmation_disabled, true);
   assert.equal(doctorPayload.client_checks.hermes.skill_installed, true);
   assert.ok(doctorPayload.client_checks.hermes.recommendations.some((item) => item.includes('/reload-mcp')));
 

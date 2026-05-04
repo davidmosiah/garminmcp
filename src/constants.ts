@@ -1,5 +1,5 @@
 export const SERVER_NAME = "garmin-mcp-server";
-export const SERVER_VERSION = "0.1.3";
+export const SERVER_VERSION = "0.1.4";
 export const NPM_PACKAGE_NAME = "garmin-mcp-unofficial";
 export const PINNED_NPM_PACKAGE = `${NPM_PACKAGE_NAME}@${SERVER_VERSION}`;
 
@@ -7,6 +7,7 @@ export const GARMIN_CONNECT_API_BASE_URL = "https://connectapi.garmin.com";
 export const GARMIN_DI_TOKEN_URL = "https://diauth.garmin.com/di-oauth2-service/oauth/token";
 export const GARMIN_DEVELOPER_PORTAL_URL = "https://developerportal.garmin.com/developer-programs/connect-developer-api";
 export const GARMIN_CONNECT_STATUS_URL = "https://connect.garmin.com/status/";
+export const GARMIN_MCP_DOCS_URL = "https://garminconnectmcp.vercel.app/";
 
 export const DEFAULT_PRIVACY_MODE = "structured";
 export const DEFAULT_LIMIT = 20;
