@@ -20,7 +20,9 @@ import {
   RevokeAccessOutputSchema,
   SimpleReadInputSchema,
   SummaryOutputSchema,
-  WeeklySummaryInputSchema
+  WeeklySummaryInputSchema,
+  WellnessContextInputSchema,
+  WellnessContextOutputSchema
 } from "../schemas/common.js";
 import { buildPrivacyAudit } from "../services/audit.js";
 import { buildAgentManifest, formatAgentManifestMarkdown } from "../services/agent-manifest.js";
@@ -30,6 +32,7 @@ import { getConfig } from "../services/config.js";
 import { bulletList, formatCollection, makeError, makeResponse } from "../services/format.js";
 import { applyPrivacy, resolvePrivacyMode } from "../services/privacy.js";
 import { buildDailySummary, buildWeeklySummary, formatSummaryMarkdown } from "../services/summary.js";
+import { buildWellnessContext, formatWellnessContextMarkdown } from "../services/context.js";
 import { GarminClient } from "../services/garmin-client.js";
 
 const DateReadInputSchema = z.object({
@@ -358,6 +361,21 @@ export function registerGarminTools(server: McpServer): void {
     try {
       const summary = await buildWeeklySummary(client(), params);
       return makeResponse(summary, params.response_format, formatSummaryMarkdown(summary));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+
+  server.registerTool("garmin_wellness_context", {
+    title: "Garmin Wellness Context",
+    description: "Normalize Garmin readiness, sleep score, Body Battery and recent movement load into the shared wellness_context shape for recommendation engines.",
+    inputSchema: WellnessContextInputSchema.shape,
+    outputSchema: WellnessContextOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+  }, async (params) => {
+    try {
+      const context = await buildWellnessContext(client(), params);
+      return makeResponse(context, params.response_format, formatWellnessContextMarkdown(context));
     } catch (error) {
       return makeError((error as Error).message);
     }

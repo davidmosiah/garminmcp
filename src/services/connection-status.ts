@@ -161,7 +161,7 @@ async function inspectHermesClient(homeDir: string): Promise<HermesClientCheck> 
     const check = {
       ...base,
       config_exists: config.exists,
-      garmin_server_configured: /garmin-mcp-unofficial|garmin-mcp-server|garmin-mcp/i.test(configText) && /^\s*garmin\s*:/m.test(configText),
+      garmin_server_configured: /garmin-mcp-unofficial|garmin-mcp-server|garmin-mcp|garminmcp/i.test(configText) && /^\s*garmin\s*:/m.test(configText),
       package_pinned: /garmin-mcp-unofficial@\d+\.\d+\.\d+/.test(configText),
       mcp_reload_confirmation_disabled: config.exists ? /mcp_reload_confirm\s*:\s*false/.test(configText) : undefined,
       skill_installed: skillExists

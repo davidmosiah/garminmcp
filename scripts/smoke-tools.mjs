@@ -13,7 +13,8 @@ const expectedTools = [
   'garmin_get_hydration_day', 'garmin_get_intensity_minutes_day', 'garmin_get_primary_training_device', 'garmin_get_profile',
   'garmin_get_respiration_day', 'garmin_get_sleep_day', 'garmin_get_spo2_day', 'garmin_get_steps_day',
   'garmin_get_stress_day', 'garmin_get_training_readiness_day', 'garmin_get_training_status_day', 'garmin_get_user_settings',
-  'garmin_get_weight_range', 'garmin_list_activities', 'garmin_list_devices', 'garmin_privacy_audit', 'garmin_weekly_summary'
+  'garmin_get_weight_range', 'garmin_list_activities', 'garmin_list_devices', 'garmin_privacy_audit', 'garmin_weekly_summary',
+  'garmin_wellness_context'
 ];
 
 const expectedResources = ['garmin://agent-manifest', 'garmin://capabilities', 'garmin://latest/activity', 'garmin://profile', 'garmin://summary/daily', 'garmin://summary/weekly'];

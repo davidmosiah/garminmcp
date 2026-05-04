@@ -9,6 +9,7 @@ export const HERMES_DIRECT_TOOLS = [
   "mcp_garmin_garmin_auth_instructions",
   "mcp_garmin_garmin_daily_summary",
   "mcp_garmin_garmin_weekly_summary",
+  "mcp_garmin_garmin_wellness_context",
   "mcp_garmin_garmin_get_sleep_day",
   "mcp_garmin_garmin_get_heart_day",
   "mcp_garmin_garmin_get_body_battery_day",
@@ -48,6 +49,7 @@ const STANDARD_TOOLS = [
   "garmin_get_activity_hr_zones",
   "garmin_daily_summary",
   "garmin_weekly_summary",
+  "garmin_wellness_context",
   "garmin_privacy_audit",
   "garmin_cache_status",
   "garmin_disconnect_local"
@@ -79,7 +81,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
       secret_storage: "Garmin password is requested only by the local auth helper and is not saved by this MCP.",
       caveat: GARMIN_CONNECT_PERSONAL_BOUNDARY
     },
-    recommended_first_calls: ["garmin_connection_status", "garmin_daily_summary", "garmin_weekly_summary"],
+    recommended_first_calls: ["garmin_connection_status", "garmin_wellness_context", "garmin_daily_summary", "garmin_weekly_summary"],
     standard_tools: STANDARD_TOOLS,
     resources: RESOURCES,
     hermes: {
@@ -101,6 +103,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
       "Do not ask users to paste Garmin passwords or tokens into agent chat. Run local auth instead.",
       "Explain that this is unofficial Garmin Connect personal mode, not Garmin Health API partnership access.",
       "For Hermes, do not restart the gateway for normal Garmin data access; reload MCP instead.",
+      "Use garmin_wellness_context as the normalized handoff to exercise recommendation tools.",
       "Do not provide medical diagnosis or treatment instructions. Frame outputs as health/training context."
     ],
     troubleshooting: [
@@ -151,7 +154,7 @@ ${manifest.agent_rules.map((rule) => `- ${rule}`).join("\n")}
 }
 
 export function hermesConfigSnippet(): string {
-  return `mcp_servers:\n  garmin:\n    command: npx\n    args:\n      - -y\n      - ${PINNED_NPM_PACKAGE}`;
+  return `mcp_servers:\n  garmin:\n    command: npx\n    args:\n      - -y\n      - ${PINNED_NPM_PACKAGE}\n    timeout: 120\n    connect_timeout: 60\n    sampling:\n      enabled: false`;
 }
 
 export function hermesSkillMarkdown(): string {

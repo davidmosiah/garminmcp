@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { buildDailySummary, buildWeeklySummary } from '../dist/services/summary.js';
+import { buildWellnessContext } from '../dist/services/context.js';
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -60,5 +61,13 @@ assert.equal(weekly.scorecard.current.days, 7);
 assert.equal(weekly.scorecard.current.avg_sleep_hours, 7.17);
 assert.equal(weekly.scorecard.current.avg_body_battery_end, 54);
 assert.ok(weekly.diagnostic.bottlenecks.length >= 1);
+
+const context = await buildWellnessContext(fakeClient, { days: 7, timezone: 'UTC' });
+assert.equal(context.source, 'garmin');
+assert.equal(context.readiness_score, 72);
+assert.equal(context.sleep_score, 86);
+assert.equal(context.body_battery, 54);
+assert.equal(context.recent_training_load, 'normal');
+assert.ok(context.notes.some((note) => /Body Battery/i.test(note)));
 
 console.log(JSON.stringify({ ok: true, daily: daily.kind, weekly: weekly.kind }, null, 2));

@@ -35,13 +35,14 @@ export function buildCapabilities() {
       { name: "Heart and physiology", examples: ["daily heart-rate samples", "resting HR", "respiration", "SpO2"], tools: ["garmin_get_heart_day", "garmin_get_respiration_day", "garmin_get_spo2_day"] },
       { name: "Activities", examples: ["recent workouts", "activity detail", "splits", "weather", "heart-rate zones"], tools: ["garmin_list_activities", "garmin_get_activity", "garmin_get_activity_details", "garmin_get_activity_splits", "garmin_get_activity_weather", "garmin_get_activity_hr_zones"] },
       { name: "Body logs", examples: ["weight range", "hydration day"], tools: ["garmin_get_weight_range", "garmin_get_hydration_day"] },
-      { name: "Agent summaries", examples: ["daily diagnostic", "weekly trend review", "action candidates"], tools: ["garmin_daily_summary", "garmin_weekly_summary"] }
+      { name: "Agent summaries", examples: ["daily diagnostic", "weekly trend review", "action candidates", "normalized wellness_context"], tools: ["garmin_daily_summary", "garmin_weekly_summary", "garmin_wellness_context"] }
     ],
     recommended_agent_flow: [
       "Call garmin_agent_manifest when installing or operating inside a server agent such as Hermes.",
       "Call garmin_connection_status before calling Garmin data tools.",
       "If setup is incomplete, guide the user through setup, auth --install-helper and doctor.",
       "Use garmin_daily_summary or garmin_weekly_summary before low-level endpoint tools.",
+      "Use garmin_wellness_context when handing readiness, sleep, Body Battery and load context to Exercise Catalog.",
       "Treat health data as sensitive; avoid raw payloads unless explicitly requested.",
       "Explain clearly that this is unofficial Garmin Connect personal mode and can break if Garmin changes private auth or endpoints.",
       "Use Garmin as trend context, not medical diagnosis. Escalate symptoms or abnormal vitals to clinicians."

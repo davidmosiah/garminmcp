@@ -62,6 +62,15 @@ export const DailySummaryInputSchema = z.object({
   response_format: ResponseFormatSchema
 }).strict();
 
+export const WellnessContextInputSchema = z.object({
+  days: z.number().int().min(1).max(30).default(7).describe("Lookback window for normalized Garmin wellness context."),
+  timezone: z.string().min(1).max(80).default("UTC").describe("IANA timezone used only for display, e.g. America/New_York."),
+  soreness: z.array(z.string().min(1).max(80)).default([]),
+  injury_flags: z.array(z.string().min(1).max(120)).default([]),
+  notes: z.string().max(500).optional(),
+  response_format: ResponseFormatSchema
+}).strict();
+
 export const WeeklySummaryInputSchema = z.object({
   days: z.number().int().min(7).max(60).default(7).describe("Recent analysis window in days."),
   compare_days: z.number().int().min(0).max(60).default(7).describe("Prior comparison window in days. Use 0 to disable comparison."),
@@ -233,6 +242,21 @@ export const SummaryOutputSchema = z.object({
   generated_at: z.string()
 }).passthrough();
 
+export const WellnessContextOutputSchema = z.object({
+  source: z.literal("garmin"),
+  generated_at: z.string(),
+  readiness_score: z.number().min(0).max(100).optional(),
+  sleep_score: z.number().min(0).max(100).optional(),
+  body_battery: z.number().min(0).max(100).optional(),
+  recent_training_load: z.enum(["low", "normal", "high", "unknown"]),
+  recent_training_load_minutes: z.number().nonnegative().optional(),
+  soreness: z.array(z.string()),
+  injury_flags: z.array(z.string()),
+  notes: z.array(z.string()),
+  data_quality: z.unknown().optional(),
+  telegram_summary: z.string().optional()
+}).strict();
+
 export type CollectionInput = z.infer<typeof CollectionInputSchema>;
 export type IdInput = z.infer<typeof IdInputSchema>;
 export type SimpleReadInput = z.infer<typeof SimpleReadInputSchema>;
@@ -240,4 +264,5 @@ export type ResponseOnlyInput = z.infer<typeof ResponseOnlyInputSchema>;
 export type AgentManifestInput = z.infer<typeof AgentManifestInputSchema>;
 export type AuthInstructionsInput = z.infer<typeof AuthInstructionsInputSchema>;
 export type DailySummaryInput = z.infer<typeof DailySummaryInputSchema>;
+export type WellnessContextInput = z.infer<typeof WellnessContextInputSchema>;
 export type WeeklySummaryInput = z.infer<typeof WeeklySummaryInputSchema>;
