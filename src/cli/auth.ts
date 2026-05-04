@@ -9,23 +9,16 @@ export async function runAuthCommand(args: string[]): Promise<number> {
   const installHelper = args.includes("--install-helper");
   const config = getConfig();
 
-  const python = findPython();
-  if (!python) {
+  const basePython = findPython();
+  if (!basePython) {
     return printAuthFailure(json, "python3 was not found. Install Python 3, then run garmin-mcp-server auth again.");
   }
 
-  const hasHelper = pythonHasGarminconnect(python);
-  if (!hasHelper) {
-    if (!installHelper) {
-      const message = "Python helper package garminconnect is not installed. Run `garmin-mcp-server auth --install-helper` or install it yourself with `python3 -m pip install --user garminconnect==0.3.2`.";
-      return printAuthFailure(json, message);
-    }
-    const install = spawnSync(python, ["-m", "pip", "install", "--user", "garminconnect==0.3.2"], { encoding: "utf8", stdio: json ? "pipe" : "inherit" });
-    if (install.status !== 0) {
-      const detail = json ? `${install.stderr || install.stdout}`.trim() : "pip install failed";
-      return printAuthFailure(json, `Could not install garminconnect helper: ${detail}`);
-    }
+  const helper = ensurePythonWithGarminconnect(basePython, installHelper, dirname(config.tokenPath), json);
+  if (helper.error || !helper.python) {
+    return printAuthFailure(json, helper.error ?? "Could not prepare Garmin auth helper.");
   }
+  const python = helper.python;
 
   const helperPath = writeHelperScript();
   const run = spawnSync(python, [helperPath, config.tokenPath], {
@@ -86,6 +79,32 @@ function findPython(): string | undefined {
 function pythonHasGarminconnect(python: string): boolean {
   const result = spawnSync(python, ["-c", "import garminconnect"], { encoding: "utf8" });
   return result.status === 0;
+}
+
+function ensurePythonWithGarminconnect(python: string, installHelper: boolean, helperRoot: string, json: boolean): { python?: string; error?: string } {
+  if (pythonHasGarminconnect(python)) return { python };
+  if (!installHelper) {
+    return { error: "Python helper package garminconnect is not installed. Run `garmin-mcp-server auth --install-helper`." };
+  }
+
+  const userInstall = spawnSync(python, ["-m", "pip", "install", "--user", "garminconnect==0.3.2"], { encoding: "utf8", stdio: json ? "pipe" : "inherit" });
+  if (userInstall.status === 0 && pythonHasGarminconnect(python)) return { python };
+
+  const venvDir = join(helperRoot, "venv");
+  const venv = spawnSync(python, ["-m", "venv", venvDir], { encoding: "utf8", stdio: json ? "pipe" : "inherit" });
+  if (venv.status !== 0) {
+    const detail = json ? `${venv.stderr || venv.stdout || userInstall.stderr || userInstall.stdout}`.trim() : "venv creation failed";
+    return { error: `Could not create isolated Python helper environment: ${detail}` };
+  }
+
+  const venvPython = join(venvDir, process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
+  spawnSync(venvPython, ["-m", "pip", "install", "--upgrade", "pip"], { encoding: "utf8", stdio: json ? "pipe" : "inherit" });
+  const venvInstall = spawnSync(venvPython, ["-m", "pip", "install", "garminconnect==0.3.2"], { encoding: "utf8", stdio: json ? "pipe" : "inherit" });
+  if (venvInstall.status !== 0 || !pythonHasGarminconnect(venvPython)) {
+    const detail = json ? `${venvInstall.stderr || venvInstall.stdout || userInstall.stderr || userInstall.stdout}`.trim() : "pip install failed";
+    return { error: `Could not install garminconnect helper in isolated venv: ${detail}` };
+  }
+  return { python: venvPython };
 }
 
 function writeHelperScript(): string {

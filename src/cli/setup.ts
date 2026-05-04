@@ -56,6 +56,7 @@ export async function runSetupCommand(args: string[]): Promise<number> {
     console.log(`MCP client config: ${clientConfig.path}`);
     if (clientConfig.hermes_skill_path) console.log(`Hermes skill: ${clientConfig.hermes_skill_path}`);
     console.log("No Garmin password or token was saved in MCP client config.");
+    console.log(setupOutput.next_step);
   }
 
   if (!options.noAuth) {
@@ -81,7 +82,7 @@ async function parseSetupOptions(args: string[]): Promise<SetupOptions> {
     cache,
     tokenPath: answers.get("token-path"),
     cachePath: answers.get("cache-path"),
-    noAuth: flags.has("no-auth"),
+    noAuth: flags.has("no-auth") || !flags.has("auth"),
     json,
     homeDir
   };

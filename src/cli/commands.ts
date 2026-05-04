@@ -98,6 +98,7 @@ Usage:
   garmin-mcp-server                 Start MCP stdio server
   garmin-mcp-server --http          Start local HTTP MCP server
   garmin-mcp-server setup           Guided setup, local config, and MCP client config
+  garmin-mcp-server setup --auth    Setup, then immediately start local Garmin auth
   garmin-mcp-server doctor          Check setup and next steps
   garmin-mcp-server doctor --json   Print setup status as JSON
   garmin-mcp-server doctor --client hermes
