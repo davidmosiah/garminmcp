@@ -140,4 +140,5 @@ npm run build
 - Docs: https://garminconnectmcp.vercel.app/
 - GitHub: https://github.com/davidmosiah/garminmcp
 - npm: https://www.npmjs.com/package/garmin-mcp-unofficial
+- Delx Wellness registry: https://github.com/davidmosiah/delx-wellness
 - Garmin Health API program: https://developer.garmin.com/gc-developer-program/health-api/
