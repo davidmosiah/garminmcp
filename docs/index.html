@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Garmin MCP Unofficial - Garmin Connect for AI agents</title>
-  <meta name="description" content="Unofficial, local-first Garmin Connect MCP server for Claude, Cursor, Windsurf, Hermes, OpenClaw and other AI agents. Sleep, HRV, Body Battery, stress, activities and weekly summaries.">
+  <meta name="description" content="Unofficial, local-first Garmin Connect MCP server for Claude, Cursor, Windsurf, Hermes, OpenClaw and other AI agents. No Garmin developer app required. Sleep, HRV, Body Battery, stress, activities and weekly summaries.">
   <link rel="canonical" href="https://garminconnectmcp.vercel.app/">
   <meta property="og:title" content="Garmin MCP Unofficial">
-  <meta property="og:description" content="Your Garmin signal, safely available to your AI agent. Local-first tokens, 34 tools, Body Battery, HRV, stress, sleep and activities.">
+  <meta property="og:description" content="Your Garmin signal, safely available to your AI agent. No developer app, local-first tokens, 34 tools, Body Battery, HRV, stress, sleep and activities.">
   <meta property="og:image" content="https://garminconnectmcp.vercel.app/assets/og-card.svg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
@@ -51,6 +51,17 @@
       </div>
     </section>
 
+    <section class="section-shell handoff-section">
+      <div class="handoff-board">
+        <div class="section-head narrow"><p class="eyebrow">Human x agent handoff</p><h2>One person logs in. The agent does the rest.</h2><p>The project is designed so a non-technical Garmin user only has one sensitive job: type credentials locally. Everything else can be delegated to an agent with a clear manifest and doctor output.</p></div>
+        <div class="handoff-lanes">
+          <article><span>Human</span><strong>Types Garmin login locally</strong><p>No password, MFA code, token or private raw payload should be pasted into chat.</p></article>
+          <article><span>CLI</span><strong>Creates config, token file and Python helper</strong><p>Setup is config-only; auth handles login; doctor explains the exact next step.</p></article>
+          <article><span>Agent</span><strong>Checks status before summaries</strong><p>Agents are guided to call manifest, connection status, then daily or weekly summaries.</p></article>
+        </div>
+      </div>
+    </section>
+
     <section id="install" class="section-shell install-section"><div class="section-head"><p class="eyebrow">For humans</p><h2>One local login. Then your agent can reason over Garmin.</h2><p>The setup step only writes local MCP configuration. The auth step is separate on purpose, so users understand exactly when Garmin credentials are requested.</p></div><div class="install-grid"><article class="install-card"><span>01</span><h3>Install setup</h3><p>Create local config and MCP client snippets. This step does not ask for your Garmin password.</p><div class="copy-row"><code>npx -y garmin-mcp-unofficial setup</code><button data-copy="npx -y garmin-mcp-unofficial setup">Copy</button></div></article><article class="install-card featured"><span>02</span><h3>Connect Garmin locally</h3><p>The helper prompts for Garmin login and MFA on your machine. If Homebrew blocks Python installs, it creates an isolated venv automatically.</p><div class="copy-row"><code>npx -y garmin-mcp-unofficial auth --install-helper</code><button data-copy="npx -y garmin-mcp-unofficial auth --install-helper">Copy</button></div></article><article class="install-card terminal-card"><span>03</span><h3>Run doctor</h3><pre><code>npx -y garmin-mcp-unofficial doctor
 npx -y garmin-mcp-unofficial doctor --client hermes</code></pre><p>If doctor says ready, start your MCP client and call <code>garmin_daily_summary</code>.</p></article></div></section>
 
@@ -68,7 +79,7 @@ Start with garmin_connection_status, then garmin_daily_summary.</code></pre></di
 
     <section class="section-shell closing"><div><p class="eyebrow">Open source</p><h2>Give Garmin users an agent-native health bridge.</h2></div><div class="hero-actions"><a class="button primary" href="https://github.com/davidmosiah/garminmcp">Star on GitHub</a><a class="button ghost" href="/quickstart.md">Read quickstart</a></div></section>
   </main>
-  <footer class="footer">Unofficial project by David Mosiah. Not affiliated with Garmin. Not medical advice. Garmin and Garmin Connect are trademarks of their respective owner.</footer>
+	  <footer class="footer">Unofficial project by David Mosiah. Not affiliated with Garmin. Not medical advice. Garmin and Garmin Connect are trademarks of their respective owners.</footer>
   <script src="/assets/site.js"></script>
 </body>
 </html>
