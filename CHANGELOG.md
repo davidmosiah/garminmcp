@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.3
+
+- Made `setup` non-interactive with respect to Garmin login by default; use `setup --auth` to start auth immediately.
+- Actually added automatic isolated Python venv fallback for Garmin auth helper when Homebrew Python blocks `pip --user` installs.
+- Added CLI regression coverage so smoke tests do not depend on a real local Garmin token.
+
+## 0.1.2
+
+- Added automatic isolated Python venv fallback for Garmin auth helper when Homebrew Python blocks pip --user installs.
+
 ## 0.1.1
 
 - Updated public docs URL to https://garminconnectmcp.vercel.app after Vercel alias assignment.

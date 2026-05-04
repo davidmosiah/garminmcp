@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
@@ -15,9 +18,10 @@ const expectedTools = [
 
 const expectedResources = ['garmin://agent-manifest', 'garmin://capabilities', 'garmin://latest/activity', 'garmin://profile', 'garmin://summary/daily', 'garmin://summary/weekly'];
 const expectedPrompts = ['garmin_daily_checkin', 'garmin_intraday_investigation', 'garmin_weekly_review'];
+const home = mkdtempSync(join(tmpdir(), 'Garmin MCP-smoke-home-'));
 
 const client = new Client({ name: 'Garmin MCP-smoke-test', version: '0.0.0' });
-const transport = new StdioClientTransport({ command: 'node', args: ['dist/index.js'] });
+const transport = new StdioClientTransport({ command: 'node', args: ['dist/index.js'], env: { ...process.env, HOME: home } });
 await client.connect(transport);
 try {
   const tools = await client.listTools();
@@ -62,4 +66,5 @@ try {
   console.log(JSON.stringify({ ok: true, tools: toolNames.length, resources: resourceUris.length, prompts: promptNames.length }, null, 2));
 } finally {
   await client.close();
+  rmSync(home, { recursive: true, force: true });
 }

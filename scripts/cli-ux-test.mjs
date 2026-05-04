@@ -99,6 +99,8 @@ try {
   assert.equal(setup.status, 0, setup.stderr);
   const setupPayload = JSON.parse(setup.stdout);
   assert.equal(setupPayload.ok, true);
+  assert.equal(setupPayload.auth_started, false);
+  assert.match(setupPayload.next_step, /auth --install-helper/);
   assert.match(setupPayload.config_path, /config\.json$/);
   assert.match(setupPayload.client_config_path, /generic\.json$/);
 
