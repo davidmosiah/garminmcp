@@ -1,0 +1,9 @@
+Project: Garmin MCP Unofficial
+Repository: https://github.com/davidmosiah/garminmcp
+Docs: https://garminmcp.vercel.app/
+Package: garmin-mcp-unofficial
+Install: npx -y garmin-mcp-unofficial setup
+Auth: npx -y garmin-mcp-unofficial auth --install-helper
+Doctor: npx -y garmin-mcp-unofficial doctor
+Important tools: garmin_connection_status, garmin_auth_instructions, garmin_daily_summary, garmin_weekly_summary, garmin_get_sleep_day, garmin_get_heart_day, garmin_get_hrv_day, garmin_get_body_battery_day, garmin_get_stress_day, garmin_list_activities.
+Boundary: unofficial Garmin Connect personal token mode, not official Garmin Health API partner access. No medical advice. No unrestricted raw sensor telemetry.

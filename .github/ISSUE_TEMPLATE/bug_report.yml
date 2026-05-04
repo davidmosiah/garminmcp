@@ -1,0 +1,24 @@
+name: Bug report
+description: Report a bug in garmin-mcp-unofficial
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not paste Garmin passwords, MFA codes, tokens, raw GPS exports or private health/activity payloads."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: How can we reproduce it without your secrets?
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: 0.1.0

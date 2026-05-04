@@ -1,0 +1,33 @@
+name: Install or setup help
+description: Get help connecting Garmin MCP without sharing secrets
+labels: [help wanted, setup]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not paste Garmin passwords, MFA codes, token files, or personal health/activity exports."
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options:
+        - Claude Desktop
+        - Cursor
+        - Windsurf
+        - Hermes
+        - OpenClaw
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Safe doctor output
+      description: Paste `garmin-mcp-server doctor` output only after removing anything sensitive.
+      render: text
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is blocked?
+      description: Describe the step that failed and the error message.
+    validations:
+      required: true

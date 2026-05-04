@@ -1,0 +1,9 @@
+<svg width="1360" height="620" viewBox="0 0 1360 620" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Garmin MCP architecture</title>
+  <desc id="desc">Architecture diagram showing Garmin Connect personal token mode through a local MCP server into AI agents.</desc>
+  <rect width="1360" height="620" rx="44" fill="#020605"/>
+  <defs><linearGradient id="g" x1="170" x2="1190"><stop stop-color="#b7ff5a"/><stop offset=".5" stop-color="#20f6a4"/><stop offset="1" stop-color="#47c7ff"/></linearGradient></defs>
+  <g fill="#07110e" stroke="#caffdf" stroke-opacity=".16"><rect x="78" y="160" width="300" height="250" rx="34"/><rect x="530" y="130" width="300" height="310" rx="34"/><rect x="982" y="160" width="300" height="250" rx="34"/></g>
+  <path d="M380 285 C450 230 470 230 530 285" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/><path d="M830 285 C900 230 920 230 982 285" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+  <g font-family="Avenir, Helvetica, sans-serif" font-weight="900"><text x="128" y="240" fill="#20f6a4" font-size="24" letter-spacing="2">GARMIN CONNECT</text><text x="128" y="286" fill="#effff7" font-size="21">personal tokens</text><text x="128" y="326" fill="#9ccbb8" font-size="18">sleep · HRV · activities</text><text x="580" y="222" fill="#b7ff5a" font-size="24" letter-spacing="2">LOCAL MCP</text><text x="580" y="268" fill="#effff7" font-size="21">privacy modes · cache</text><text x="580" y="308" fill="#9ccbb8" font-size="18">summaries · tools · manifest</text><text x="1032" y="240" fill="#47c7ff" font-size="24" letter-spacing="2">AI AGENTS</text><text x="1032" y="286" fill="#effff7" font-size="21">Claude · Hermes · Cursor</text><text x="1032" y="326" fill="#9ccbb8" font-size="18">grounded health context</text></g>
+</svg>

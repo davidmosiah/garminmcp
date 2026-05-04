@@ -1,0 +1,171 @@
+import { GARMIN_CONNECT_PERSONAL_BOUNDARY, NPM_PACKAGE_NAME, PINNED_NPM_PACKAGE, SERVER_VERSION } from "../constants.js";
+
+export const AGENT_CLIENTS = ["generic", "claude", "cursor", "windsurf", "hermes", "openclaw"] as const;
+export type AgentClientName = typeof AGENT_CLIENTS[number];
+
+export const HERMES_DIRECT_TOOLS = [
+  "mcp_garmin_garmin_agent_manifest",
+  "mcp_garmin_garmin_connection_status",
+  "mcp_garmin_garmin_auth_instructions",
+  "mcp_garmin_garmin_daily_summary",
+  "mcp_garmin_garmin_weekly_summary",
+  "mcp_garmin_garmin_get_sleep_day",
+  "mcp_garmin_garmin_get_heart_day",
+  "mcp_garmin_garmin_get_body_battery_day",
+  "mcp_garmin_garmin_get_training_readiness_day",
+  "mcp_garmin_garmin_list_activities"
+];
+
+const STANDARD_TOOLS = [
+  "garmin_agent_manifest",
+  "garmin_capabilities",
+  "garmin_auth_instructions",
+  "garmin_connection_status",
+  "garmin_get_profile",
+  "garmin_get_user_settings",
+  "garmin_list_devices",
+  "garmin_get_primary_training_device",
+  "garmin_get_daily_summary",
+  "garmin_get_steps_day",
+  "garmin_get_heart_day",
+  "garmin_get_sleep_day",
+  "garmin_get_stress_day",
+  "garmin_get_body_battery_day",
+  "garmin_get_body_battery_events",
+  "garmin_get_hrv_day",
+  "garmin_get_training_readiness_day",
+  "garmin_get_training_status_day",
+  "garmin_get_respiration_day",
+  "garmin_get_spo2_day",
+  "garmin_get_intensity_minutes_day",
+  "garmin_get_weight_range",
+  "garmin_get_hydration_day",
+  "garmin_list_activities",
+  "garmin_get_activity",
+  "garmin_get_activity_details",
+  "garmin_get_activity_splits",
+  "garmin_get_activity_weather",
+  "garmin_get_activity_hr_zones",
+  "garmin_daily_summary",
+  "garmin_weekly_summary",
+  "garmin_privacy_audit",
+  "garmin_cache_status",
+  "garmin_disconnect_local"
+];
+
+const RESOURCES = ["garmin://agent-manifest", "garmin://capabilities", "garmin://profile", "garmin://latest/activity", "garmin://summary/daily", "garmin://summary/weekly"];
+
+export function parseAgentClientName(value: string): AgentClientName {
+  return AGENT_CLIENTS.includes(value as AgentClientName) ? value as AgentClientName : "generic";
+}
+
+export function buildAgentManifest(client: AgentClientName = "generic") {
+  return {
+    project: "garmin-mcp-unofficial",
+    mcp_name: "io.github.davidmosiah/garminmcp",
+    client,
+    unofficial: true,
+    package: {
+      name: NPM_PACKAGE_NAME,
+      version: SERVER_VERSION,
+      install_command: `npx -y ${NPM_PACKAGE_NAME}`,
+      pinned_install_command: `npx -y ${PINNED_NPM_PACKAGE}`,
+      binary: "garmin-mcp-server"
+    },
+    auth: {
+      provider: "Garmin Connect",
+      mode: "Unofficial personal token mode through a local helper",
+      token_storage: "~/.garmin-mcp/garmin_tokens.json with 0600 permissions",
+      secret_storage: "Garmin password is requested only by the local auth helper and is not saved by this MCP.",
+      caveat: GARMIN_CONNECT_PERSONAL_BOUNDARY
+    },
+    recommended_first_calls: ["garmin_connection_status", "garmin_daily_summary", "garmin_weekly_summary"],
+    standard_tools: STANDARD_TOOLS,
+    resources: RESOURCES,
+    hermes: {
+      config_path: "~/.hermes/config.yaml",
+      skill_path: "~/.hermes/skills/garmin-mcp/SKILL.md",
+      tool_name_prefix: "mcp_garmin_",
+      common_tool_names: HERMES_DIRECT_TOOLS,
+      recommended_config: hermesConfigSnippet(),
+      use_direct_tools: true,
+      avoid_terminal_workarounds: true,
+      no_gateway_restart_for_data_access: true,
+      reload_after_config_change: "/reload-mcp or hermes mcp test garmin",
+      doctor_command: "npx -y garmin-mcp-unofficial doctor --client hermes --json"
+    },
+    agent_rules: [
+      "Call garmin_connection_status before Garmin data tools.",
+      "If setup is incomplete, guide the user through setup, auth --install-helper and doctor instead of guessing token state.",
+      "Treat Garmin health data as sensitive. Do not expose raw payloads unless the user asks for raw mode.",
+      "Do not ask users to paste Garmin passwords or tokens into agent chat. Run local auth instead.",
+      "Explain that this is unofficial Garmin Connect personal mode, not Garmin Health API partnership access.",
+      "For Hermes, do not restart the gateway for normal Garmin data access; reload MCP instead.",
+      "Do not provide medical diagnosis or treatment instructions. Frame outputs as health/training context."
+    ],
+    troubleshooting: [
+      { symptom: "token file missing", action: "Run `garmin-mcp-server auth --install-helper` locally. The helper supports MFA prompts." },
+      { symptom: "401, expired token, or refresh failure", action: "Run `garmin-mcp-server auth --install-helper` again. Garmin can invalidate personal tokens." },
+      { symptom: "429 or repeated auth failures", action: "Back off, avoid repeated logins, then retry later. Garmin can rate-limit private auth." },
+      { symptom: "endpoint changed or 404", action: "Treat as Garmin Connect drift. Open an issue with the endpoint and sanitized error." },
+      { symptom: "Hermes configured but tools unavailable", action: "Run `/reload-mcp` or `hermes mcp test garmin`; do not restart gateway for normal reload." }
+    ],
+    links: {
+      github: "https://github.com/davidmosiah/garminmcp",
+      docs: "https://garminmcp.vercel.app/",
+      npm: "https://www.npmjs.com/package/garmin-mcp-unofficial",
+      garmin_connect: "https://connect.garmin.com/",
+      garmin_health_api: "https://developer.garmin.com/gc-developer-program/health-api/"
+    }
+  };
+}
+
+export function formatAgentManifestMarkdown(manifest: ReturnType<typeof buildAgentManifest>): string {
+  return `# Garmin MCP Agent Manifest
+
+Unofficial: ${manifest.unofficial}
+Package: \`${manifest.package.name}\` v${manifest.package.version}
+Install: \`${manifest.package.install_command}\`
+Pinned install: \`${manifest.package.pinned_install_command}\`
+
+## Auth
+Provider: ${manifest.auth.provider}
+Mode: ${manifest.auth.mode}
+Tokens: ${manifest.auth.token_storage}
+Secret handling: ${manifest.auth.secret_storage}
+Caveat: ${manifest.auth.caveat}
+
+## First Calls
+${manifest.recommended_first_calls.map((tool) => `- \`${tool}\``).join("\n")}
+
+## Hermes
+Config: \`${manifest.hermes.config_path}\`
+Skill: \`${manifest.hermes.skill_path}\`
+Reload: \`${manifest.hermes.reload_after_config_change}\`
+Direct tools:
+${manifest.hermes.common_tool_names.map((tool) => `- \`${tool}\``).join("\n")}
+
+## Agent Rules
+${manifest.agent_rules.map((rule) => `- ${rule}`).join("\n")}
+`;
+}
+
+export function hermesConfigSnippet(): string {
+  return `mcp_servers:\n  garmin:\n    command: npx\n    args:\n      - -y\n      - ${PINNED_NPM_PACKAGE}`;
+}
+
+export function hermesSkillMarkdown(): string {
+  return `# Garmin MCP Skill
+
+Use this skill whenever a user asks Hermes to inspect Garmin activity, sleep, heart-rate, HRV, stress, Body Battery, training readiness, daily summaries or weekly summaries through the Garmin MCP.
+
+## Rules
+- Start with \`mcp_garmin_garmin_connection_status\`.
+- If tokens are missing, ask the user to run \`garmin-mcp-server auth --install-helper\` locally. Never ask them to paste Garmin passwords or token values into chat.
+- Prefer \`mcp_garmin_garmin_daily_summary\` and \`mcp_garmin_garmin_weekly_summary\` before low-level endpoint calls.
+- Treat Garmin data as sensitive. Do not request raw payloads unless the user explicitly asks.
+- Explain that this is unofficial Garmin Connect personal mode and can break if Garmin changes private auth or endpoints.
+- Do not diagnose or treat medical conditions.
+- Reload MCP with \`/reload-mcp\` or \`hermes mcp test garmin\`; do not restart the gateway for normal data access.
+`;
+}

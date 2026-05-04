@@ -1,0 +1,26 @@
+<svg width="980" height="880" viewBox="0 0 980 880" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Garmin MCP cinematic health interface</title>
+  <desc id="desc">A cinematic Garmin Connect signal layer flowing into an AI agent.</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="58%"><stop stop-color="#20f6a4" stop-opacity=".62"/><stop offset=".48" stop-color="#00b0b9" stop-opacity=".24"/><stop offset="1" stop-color="#020605" stop-opacity="0"/></radialGradient>
+    <linearGradient id="signal" x1="120" x2="850"><stop stop-color="#b7ff5a"/><stop offset=".52" stop-color="#20f6a4"/><stop offset="1" stop-color="#47c7ff"/></linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="980" height="880" rx="70" fill="#020605"/>
+  <rect x="42" y="42" width="896" height="796" rx="54" fill="#07110e" stroke="#caffdf" stroke-opacity=".14"/>
+  <circle cx="500" cy="390" r="310" fill="url(#glow)" filter="url(#soft)"/>
+  <g opacity=".13" stroke="#caffdf"><circle cx="500" cy="390" r="260"/><circle cx="500" cy="390" r="170"/><circle cx="500" cy="390" r="86"/></g>
+  <path d="M120 592 H212 L252 474 L304 692 L356 548 H456 L506 592 L550 512 L606 656 L664 592 H748 L792 430 L850 704 L898 592" stroke="url(#signal)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#020605" stroke="#caffdf" stroke-opacity=".16">
+    <rect x="112" y="114" width="248" height="122" rx="26"/>
+    <rect x="640" y="132" width="230" height="118" rx="26"/>
+    <rect x="124" y="656" width="270" height="116" rx="28"/>
+    <rect x="548" y="636" width="318" height="132" rx="30" fill="#20f6a4" stroke="none"/>
+  </g>
+  <g font-family="Avenir, Helvetica, sans-serif" font-weight="900">
+    <text x="142" y="156" fill="#9ccbb8" font-size="17" letter-spacing="2">BODY BATTERY</text><text x="142" y="208" fill="#b7ff5a" font-size="52">54</text>
+    <text x="672" y="174" fill="#9ccbb8" font-size="17" letter-spacing="2">HRV</text><text x="672" y="226" fill="#47c7ff" font-size="52">48 ms</text>
+    <text x="154" y="704" fill="#9ccbb8" font-size="17" letter-spacing="2">SLEEP</text><text x="154" y="752" fill="#effff7" font-size="44">7h 10m</text>
+    <text x="586" y="684" fill="#001411" font-size="17" letter-spacing="2">AI AGENT LAYER</text><text x="586" y="724" fill="#001411" font-size="35">Pace the day.</text><text x="586" y="752" fill="#06473c" font-size="19">Protect recovery before intensity.</text>
+  </g>
+</svg>

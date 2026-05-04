@@ -1,0 +1,365 @@
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+import {
+  AgentManifestInputSchema,
+  AgentManifestOutputSchema,
+  AuthInstructionsInputSchema,
+  AuthInstructionsOutputSchema,
+  CacheStatusOutputSchema,
+  CapabilitiesOutputSchema,
+  CollectionInputSchema,
+  CollectionOutputSchema,
+  ConnectionStatusInputSchema,
+  ConnectionStatusOutputSchema,
+  DailySummaryInputSchema,
+  EndpointDataOutputSchema,
+  IdInputSchema,
+  PrivacyAuditOutputSchema,
+  ResponseFormatSchema,
+  ResponseOnlyInputSchema,
+  RevokeAccessOutputSchema,
+  SimpleReadInputSchema,
+  SummaryOutputSchema,
+  WeeklySummaryInputSchema
+} from "../schemas/common.js";
+import { buildPrivacyAudit } from "../services/audit.js";
+import { buildAgentManifest, formatAgentManifestMarkdown } from "../services/agent-manifest.js";
+import { buildCapabilities } from "../services/capabilities.js";
+import { buildConnectionStatus } from "../services/connection-status.js";
+import { getConfig } from "../services/config.js";
+import { bulletList, formatCollection, makeError, makeResponse } from "../services/format.js";
+import { applyPrivacy, resolvePrivacyMode } from "../services/privacy.js";
+import { buildDailySummary, buildWeeklySummary, formatSummaryMarkdown } from "../services/summary.js";
+import { GarminClient } from "../services/garmin-client.js";
+
+const DateReadInputSchema = z.object({
+  date: z.string().default("today").describe("Date as yyyy-MM-dd or today."),
+  privacy_mode: SimpleReadInputSchema.shape.privacy_mode,
+  response_format: ResponseFormatSchema
+}).strict();
+
+const WeightRangeInputSchema = z.object({
+  start_date: z.string().default("today").describe("Start date as yyyy-MM-dd or today."),
+  end_date: z.string().default("today").describe("End date as yyyy-MM-dd or today."),
+  privacy_mode: SimpleReadInputSchema.shape.privacy_mode,
+  response_format: ResponseFormatSchema
+}).strict();
+
+type DateEndpointBuilder = (client: GarminClient, date: string) => string | Promise<string>;
+
+function client(): GarminClient {
+  return new GarminClient(getConfig());
+}
+
+function dateValue(value: string): string {
+  if (value === "today") return new Date().toISOString().slice(0, 10);
+  return value.slice(0, 10);
+}
+
+async function displayName(client: GarminClient): Promise<string> {
+  return encodeURIComponent(await client.getDisplayName());
+}
+
+function registerCollectionTool(server: McpServer, name: string, title: string, description: string): void {
+  server.registerTool(
+    name,
+    {
+      title,
+      description,
+      inputSchema: CollectionInputSchema.shape,
+      outputSchema: CollectionOutputSchema.shape,
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+    },
+    async (params) => {
+      try {
+        const config = getConfig();
+        const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+        const garmin = new GarminClient(config);
+        const result = await garmin.listActivities(params);
+        const endpoint = "/activitylist-service/activities/search/activities";
+        const records = applyPrivacy(endpoint, { records: result.records }, privacyMode) as { records: unknown[] };
+        const output = {
+          endpoint,
+          privacy_mode: privacyMode,
+          count: records.records.length,
+          records: records.records,
+          next_page: result.next_page,
+          has_more: Boolean(result.next_page),
+          pages_fetched: result.pages_fetched
+        };
+        return makeResponse(output, params.response_format, formatCollection(title, records.records, output));
+      } catch (error) {
+        return makeError((error as Error).message);
+      }
+    }
+  );
+}
+
+function registerDateTool(server: McpServer, name: string, title: string, endpointBuilder: DateEndpointBuilder, description: string): void {
+  server.registerTool(
+    name,
+    {
+      title,
+      description,
+      inputSchema: DateReadInputSchema.shape,
+      outputSchema: EndpointDataOutputSchema.shape,
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+    },
+    async (params) => {
+      try {
+        const config = getConfig();
+        const garmin = new GarminClient(config);
+        const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+        const date = dateValue(params.date);
+        const endpoint = await endpointBuilder(garmin, date);
+        const data = applyPrivacy(endpoint, await garmin.get(endpoint), privacyMode);
+        return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList(title, { endpoint, date, data: JSON.stringify(data) }));
+      } catch (error) {
+        return makeError((error as Error).message);
+      }
+    }
+  );
+}
+
+function registerGetByIdTool(server: McpServer, name: string, title: string, endpointBuilder: (id: string | number) => string, description: string): void {
+  server.registerTool(
+    name,
+    {
+      title,
+      description,
+      inputSchema: IdInputSchema.shape,
+      outputSchema: EndpointDataOutputSchema.shape,
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+    },
+    async (params) => {
+      try {
+        const config = getConfig();
+        const garmin = new GarminClient(config);
+        const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+        const endpoint = endpointBuilder(params.id);
+        const data = applyPrivacy(endpoint, await garmin.get(endpoint), privacyMode);
+        return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList(title, { endpoint, data: JSON.stringify(data) }));
+      } catch (error) {
+        return makeError((error as Error).message);
+      }
+    }
+  );
+}
+
+function registerSimpleEndpointTool(server: McpServer, name: string, title: string, endpoint: string, description: string): void {
+  server.registerTool(
+    name,
+    {
+      title,
+      description,
+      inputSchema: SimpleReadInputSchema.shape,
+      outputSchema: EndpointDataOutputSchema.shape,
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+    },
+    async ({ response_format, privacy_mode }) => {
+      try {
+        const config = getConfig();
+        const privacyMode = resolvePrivacyMode(config, privacy_mode);
+        const data = applyPrivacy(endpoint, await new GarminClient(config).get(endpoint), privacyMode);
+        return makeResponse({ endpoint, privacy_mode: privacyMode, data }, response_format, bulletList(title, { endpoint, data: JSON.stringify(data) }));
+      } catch (error) {
+        return makeError((error as Error).message);
+      }
+    }
+  );
+}
+
+export function registerGarminTools(server: McpServer): void {
+  server.registerTool("garmin_agent_manifest", {
+    title: "Garmin Agent Manifest",
+    description: "Machine-readable install, runtime and client guidance for AI agents. Does not call Garmin or expose secrets.",
+    inputSchema: AgentManifestInputSchema.shape,
+    outputSchema: AgentManifestOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ client: targetClient, response_format }) => {
+    const manifest = buildAgentManifest(targetClient);
+    return makeResponse(manifest, response_format, formatAgentManifestMarkdown(manifest));
+  });
+
+  server.registerTool("garmin_capabilities", {
+    title: "Garmin MCP Capabilities",
+    description: "Explain supported Garmin data, privacy boundaries, recommended agent workflow and project links.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    outputSchema: CapabilitiesOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const capabilities = buildCapabilities();
+    return makeResponse(capabilities, response_format, bulletList("Garmin MCP Capabilities", {
+      project: capabilities.project,
+      unofficial: capabilities.unofficial,
+      api_boundary: capabilities.api_boundary.source,
+      auth_model: capabilities.auth_model.type,
+      recommended_first_tools: "garmin_connection_status, garmin_daily_summary, garmin_weekly_summary",
+      docs: capabilities.links.docs
+    }));
+  });
+
+  server.registerTool("garmin_auth_instructions", {
+    title: "Garmin Auth Instructions",
+    description: "Explain the local Garmin Connect authentication flow without asking the user to paste secrets into an agent.",
+    inputSchema: AuthInstructionsInputSchema.shape,
+    outputSchema: AuthInstructionsOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const config = getConfig();
+    const output = {
+      auth_model: "Unofficial Garmin Connect personal token mode",
+      command: "npx -y garmin-mcp-unofficial auth --install-helper",
+      token_path: config.tokenPath,
+      stores_password: false,
+      notes: [
+        "The auth helper prompts locally for Garmin email, password and MFA when needed.",
+        "The MCP stores Garmin Connect tokens locally with user-only permissions and never returns token values from tools.",
+        "This is not official Garmin Health API partnership access.",
+        "Garmin can change private auth or endpoints; failures should be treated as integration drift, not user error."
+      ],
+      next_step: "Run garmin-mcp-server doctor, then start your MCP client and call garmin_connection_status."
+    };
+    return makeResponse(output, response_format, bulletList("Garmin Auth Instructions", output));
+  });
+
+  registerSimpleEndpointTool(server, "garmin_get_profile", "Garmin Profile", "/userprofile-service/socialProfile", "Get the authenticated Garmin profile using the configured privacy mode.");
+  registerSimpleEndpointTool(server, "garmin_get_user_settings", "Garmin User Settings", "/userprofile-service/userprofile/user-settings", "Get Garmin account user settings such as units and display preferences.");
+  registerSimpleEndpointTool(server, "garmin_list_devices", "Garmin Devices", "/device-service/deviceregistration/devices", "List devices registered to the Garmin account.");
+  registerSimpleEndpointTool(server, "garmin_get_primary_training_device", "Garmin Primary Training Device", "/web-gateway/device-info/primary-training-device", "Get the primary Garmin training device when available.");
+
+  registerDateTool(server, "garmin_get_daily_summary", "Garmin Daily Summary Raw", async (garmin, date) => `/usersummary-service/usersummary/daily/${await displayName(garmin)}?calendarDate=${date}`, "Get Garmin daily movement and wellness summary for a date.");
+  registerDateTool(server, "garmin_get_steps_day", "Garmin Daily Steps Chart", async (garmin, date) => `/wellness-service/wellness/dailySummaryChart/${await displayName(garmin)}?date=${date}`, "Get Garmin daily steps and summary chart for a date.");
+  registerDateTool(server, "garmin_get_heart_day", "Garmin Daily Heart Rate", async (garmin, date) => `/wellness-service/wellness/dailyHeartRate/${await displayName(garmin)}?date=${date}`, "Get Garmin daily heart-rate samples and resting heart-rate context for a date.");
+  registerDateTool(server, "garmin_get_sleep_day", "Garmin Daily Sleep", async (garmin, date) => `/wellness-service/wellness/dailySleepData/${await displayName(garmin)}?date=${date}&nonSleepBufferMinutes=60`, "Get Garmin sleep summary, stages and sleep window for a date.");
+  registerDateTool(server, "garmin_get_stress_day", "Garmin Daily Stress", (_garmin, date) => `/wellness-service/wellness/dailyStress/${date}`, "Get Garmin stress summary and samples for a date.");
+  registerDateTool(server, "garmin_get_body_battery_day", "Garmin Body Battery", (_garmin, date) => `/wellness-service/wellness/bodyBattery/reports/daily/${date}`, "Get Garmin Body Battery daily report for a date.");
+  registerDateTool(server, "garmin_get_body_battery_events", "Garmin Body Battery Events", (_garmin, date) => `/wellness-service/wellness/bodyBattery/events/${date}`, "Get Garmin Body Battery charge/drain events for a date.");
+  registerDateTool(server, "garmin_get_hrv_day", "Garmin HRV", (_garmin, date) => `/hrv-service/hrv/${date}`, "Get Garmin HRV status and overnight HRV metrics for a date when available.");
+  registerDateTool(server, "garmin_get_training_readiness_day", "Garmin Training Readiness", (_garmin, date) => `/metrics-service/metrics/trainingreadiness/${date}`, "Get Garmin training readiness for a date when supported by the device/account.");
+  registerDateTool(server, "garmin_get_training_status_day", "Garmin Training Status", (_garmin, date) => `/metrics-service/metrics/trainingstatus/aggregated/${date}`, "Get Garmin aggregated training status for a date when supported by the device/account.");
+  registerDateTool(server, "garmin_get_respiration_day", "Garmin Respiration", (_garmin, date) => `/wellness-service/wellness/daily/respiration/${date}`, "Get Garmin respiration data for a date when available.");
+  registerDateTool(server, "garmin_get_spo2_day", "Garmin SpO2", (_garmin, date) => `/wellness-service/wellness/daily/spo2/${date}`, "Get Garmin Pulse Ox / SpO2 data for a date when available.");
+  registerDateTool(server, "garmin_get_intensity_minutes_day", "Garmin Intensity Minutes", (_garmin, date) => `/wellness-service/wellness/daily/im/${date}`, "Get Garmin intensity minutes for a date.");
+  registerDateTool(server, "garmin_get_hydration_day", "Garmin Hydration", async (garmin, date) => `/usersummary-service/usersummary/hydration/daily/${await displayName(garmin)}?calendarDate=${date}`, "Get Garmin hydration summary for a date when available.");
+
+  server.registerTool("garmin_get_weight_range", {
+    title: "Garmin Weight Range",
+    description: "Get Garmin weight/body-composition logs for a date range.",
+    inputSchema: WeightRangeInputSchema.shape,
+    outputSchema: EndpointDataOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+  }, async (params) => {
+    try {
+      const config = getConfig();
+      const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+      const start = dateValue(params.start_date);
+      const end = dateValue(params.end_date);
+      const endpoint = `/weight-service/weight/dateRange?startDate=${start}&endDate=${end}`;
+      const data = applyPrivacy(endpoint, await new GarminClient(config).get(endpoint), privacyMode);
+      return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList("Garmin Weight Range", { endpoint, start, end, data: JSON.stringify(data) }));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+
+  registerCollectionTool(server, "garmin_list_activities", "Garmin Activities", "List recent Garmin activities. Supports pagination, optional date filters and privacy modes.");
+  registerGetByIdTool(server, "garmin_get_activity", "Garmin Activity", (id) => `/activity-service/activity/${id}`, "Get a Garmin activity summary by activity id.");
+  registerGetByIdTool(server, "garmin_get_activity_details", "Garmin Activity Details", (id) => `/activity-service/activity/${id}/details`, "Get detailed Garmin activity samples when available.");
+  registerGetByIdTool(server, "garmin_get_activity_splits", "Garmin Activity Splits", (id) => `/activity-service/activity/${id}/splits`, "Get Garmin activity splits/laps by activity id.");
+  registerGetByIdTool(server, "garmin_get_activity_weather", "Garmin Activity Weather", (id) => `/activity-service/activity/${id}/weather`, "Get Garmin activity weather by activity id when available.");
+  registerGetByIdTool(server, "garmin_get_activity_hr_zones", "Garmin Activity Heart-Rate Zones", (id) => `/activity-service/activity/${id}/hrTimeInZones`, "Get Garmin activity heart-rate zone time by activity id when available.");
+
+  server.registerTool("garmin_connection_status", {
+    title: "Garmin Connection Status",
+    description: "Check local Garmin config, token file, Node version, privacy mode, cache readiness and optional MCP client readiness without calling Garmin or exposing secrets.",
+    inputSchema: ConnectionStatusInputSchema.shape,
+    outputSchema: ConnectionStatusOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format, client: targetClient }) => {
+    const status = await buildConnectionStatus({ client: targetClient });
+    return makeResponse(status, response_format, bulletList("Garmin Connection Status", {
+      ok: status.ok,
+      ready_for_garmin_api: status.ready_for_garmin_api,
+      auth_mode: "garmin-connect-personal",
+      token_path: status.token.path,
+      token_exists: status.token.exists,
+      has_di_token: status.token.has_di_token,
+      has_refresh_token: status.token.has_refresh_token,
+      privacy_mode: status.privacy_mode,
+      next_steps: status.next_steps.join(" | ")
+    }));
+  });
+
+  server.registerTool("garmin_cache_status", {
+    title: "Garmin Cache Status",
+    description: "Show optional local SQLite cache status. Enable with GARMIN_CACHE=sqlite or GARMIN_CACHE=true.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    outputSchema: CacheStatusOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    try {
+      const status = await client().cacheStatus();
+      return makeResponse(status, response_format, bulletList("Garmin Cache Status", status));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+
+  server.registerTool("garmin_privacy_audit", {
+    title: "Garmin Privacy Audit",
+    description: "Return local privacy, cache, token-path and env-presence posture without revealing secret values.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    outputSchema: PrivacyAuditOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const audit = buildPrivacyAudit();
+    return makeResponse(audit, response_format, bulletList("Garmin Privacy Audit", audit));
+  });
+
+  server.registerTool("garmin_disconnect_local", {
+    title: "Disconnect Garmin Locally",
+    description: "Delete the local Garmin token file. This does not change the Garmin account; use only when the user explicitly wants to disconnect this MCP.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    outputSchema: RevokeAccessOutputSchema.shape,
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false }
+  }, async ({ response_format }) => {
+    try {
+      const result = await client().clearLocalTokens();
+      const output = { ...result, note: "Local Garmin MCP tokens were deleted. Run garmin-mcp-server auth --install-helper before future API calls." };
+      return makeResponse(output, response_format, bulletList("Garmin Local Tokens Deleted", output));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+
+  server.registerTool("garmin_daily_summary", {
+    title: "Garmin Daily Health Summary",
+    description: "Build a practical daily summary from Garmin activity, sleep, heart-rate, HRV, stress and Body Battery when available. Read-only and non-medical.",
+    inputSchema: DailySummaryInputSchema.shape,
+    outputSchema: SummaryOutputSchema,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+  }, async (params) => {
+    try {
+      const summary = await buildDailySummary(client(), params);
+      return makeResponse(summary, params.response_format, formatSummaryMarkdown(summary));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+
+  server.registerTool("garmin_weekly_summary", {
+    title: "Garmin Weekly Health Review",
+    description: "Build a weekly Garmin scorecard with movement, sleep, HRV, stress, Body Battery, bottlenecks and actions. Read-only and non-medical.",
+    inputSchema: WeeklySummaryInputSchema.shape,
+    outputSchema: SummaryOutputSchema,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+  }, async (params) => {
+    try {
+      const summary = await buildWeeklySummary(client(), params);
+      return makeResponse(summary, params.response_format, formatSummaryMarkdown(summary));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+}

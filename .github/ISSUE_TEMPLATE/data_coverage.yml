@@ -1,0 +1,24 @@
+name: Data coverage request
+description: Request support for more Garmin Connect data
+labels: [enhancement, data coverage]
+body:
+  - type: markdown
+    attributes:
+      value: "Requests must not include private token values or raw personal exports. This project uses unofficial Garmin Connect personal mode unless an official partner API mode is added later."
+  - type: input
+    id: endpoint
+    attributes:
+      label: Garmin Connect endpoint or data type
+      placeholder: Body Battery, training status, goals, badges, etc.
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Agent use case
+      description: What should an AI agent be able to answer or do with this data?
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy considerations
+      description: Does this data include sensitive health details, location, identity, or anything that should be redacted?

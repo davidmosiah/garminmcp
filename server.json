@@ -1,0 +1,57 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.davidmosiah/garminmcp",
+  "description": "Privacy-first, unofficial Garmin Connect MCP server for AI health, sleep, activity, recovery and training agents.",
+  "repository": {
+    "url": "https://github.com/davidmosiah/garminmcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "garmin-mcp-unofficial",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GARMIN_TOKEN_PATH",
+          "description": "Optional local path for Garmin Connect tokens. Defaults to ~/.garmin-mcp/garmin_tokens.json. Create it with garmin-mcp-server auth --install-helper.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "GARMIN_PRIVACY_MODE",
+          "description": "Optional payload mode: summary, structured, or raw. Defaults to structured. raw means full supported Garmin Connect payloads, not unrestricted raw sensor telemetry.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "GARMIN_CACHE",
+          "description": "Optional SQLite cache toggle. Set to true or sqlite to enable.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "GARMIN_CACHE_PATH",
+          "description": "Optional local SQLite cache path. Defaults to ~/.garmin-mcp/cache.sqlite.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "GARMIN_DOMAIN",
+          "description": "Optional Garmin domain override. Use garmin.cn only for China accounts; default is garmin.com.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
