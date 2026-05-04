@@ -141,4 +141,5 @@ npm run build
 - GitHub: https://github.com/davidmosiah/garminmcp
 - npm: https://www.npmjs.com/package/garmin-mcp-unofficial
 - Delx Wellness registry: https://github.com/davidmosiah/delx-wellness
+- Connector quality standard: https://github.com/davidmosiah/delx-wellness/blob/main/docs/connector-quality-standard.md
 - Garmin Health API program: https://developer.garmin.com/gc-developer-program/health-api/
