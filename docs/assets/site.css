@@ -77,13 +77,20 @@ button:hover, button.is-copied { border-color: transparent; color: #001411; back
 .metric-card strong { display: block; margin: .22rem 0; font-size: 1.8rem; color: var(--ink); }
 .card-sleep { left: 7%; top: 12%; } .card-hrv { right: 6%; top: 18%; } .card-load { left: 11%; bottom: 20%; }
 .proof-strip { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .85rem; margin-bottom: clamp(4.5rem, 9vw, 7.5rem); }
-.proof-strip article, .install-card, .tool-grid article, .agent-panel, .privacy-grid article, .closing { border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(145deg, rgba(238,255,247,.105), rgba(238,255,247,.035)); box-shadow: 0 24px 80px rgba(0,0,0,.25); }
+.proof-strip article, .install-card, .tool-grid article, .agent-panel, .privacy-grid article, .closing, .clarity-grid article, .outcome-card { border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(145deg, rgba(238,255,247,.105), rgba(238,255,247,.035)); box-shadow: 0 24px 80px rgba(0,0,0,.25); }
 .proof-strip article { padding: 1.05rem; }
 .proof-strip strong, .proof-strip span { display: block; }
 .proof-strip strong { color: var(--ink); } .proof-strip span { margin-top: .25rem; color: var(--dim); font-size: .88rem; }
 .section-shell { margin-bottom: clamp(4.8rem, 10vw, 8.4rem); scroll-margin-top: 6rem; }
 .section-head { max-width: 62rem; margin-bottom: 2rem; } .section-head.narrow { max-width: 48rem; }
 .section-head p { max-width: 45rem; font-size: 1.08rem; }
+.clarity-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+.clarity-grid article { position: relative; min-height: 18rem; padding: 1.45rem; overflow: hidden; }
+.clarity-grid article::before { content: ''; position: absolute; inset: auto -30% -45% 10%; height: 12rem; background: radial-gradient(circle, rgba(71,199,255,.14), transparent 65%); }
+.clarity-grid article.featured { border-color: rgba(32,246,164,.42); background: radial-gradient(circle at 100% 0%, rgba(32,246,164,.18), transparent 16rem), linear-gradient(145deg, rgba(238,255,247,.13), rgba(238,255,247,.04)); }
+.mini-label { display: inline-flex; margin-bottom: 1rem; padding: .42rem .62rem; border: 1px solid rgba(202,255,233,.14); border-radius: 999px; color: var(--mint); background: rgba(0,0,0,.2); font: 900 .68rem var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.clarity-grid h3 { font-size: clamp(1.45rem, 2vw, 1.9rem); }
+.clarity-grid strong { display: block; margin-top: 1.2rem; color: var(--lime); }
 .install-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
 .install-card { position: relative; padding: 1.45rem; overflow: hidden; }
 .install-card::after { content: ''; position: absolute; inset: auto -20% -45% 25%; height: 10rem; background: radial-gradient(circle, rgba(32,246,164,.18), transparent 65%); }
@@ -99,6 +106,11 @@ button:hover, button.is-copied { border-color: transparent; color: #001411; back
 .tool-grid article:hover, .install-card:hover, .privacy-grid article:hover { transform: translateY(-3px); border-color: rgba(32,246,164,.38); }
 .tool-grid b { display: block; margin-bottom: .7rem; color: var(--mint); font-size: 1.15rem; }
 .tool-grid span { color: var(--muted); line-height: 1.55; }
+.outcome-card { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1px; padding: .7rem; background: linear-gradient(135deg, rgba(32,246,164,.13), rgba(71,199,255,.06)); }
+.outcome-card div { min-height: 9rem; padding: 1.1rem; border-radius: 22px; background: rgba(2,6,5,.42); }
+.outcome-card span, .outcome-card small { display: block; color: var(--muted); }
+.outcome-card span { font: 900 .7rem var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+.outcome-card strong { display: block; margin: .65rem 0 .35rem; color: var(--ink); font-size: clamp(1.35rem, 2vw, 2rem); }
 .agent-panel { display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1fr); gap: 2rem; padding: clamp(1.4rem, 4vw, 2.6rem); align-items: center; background: radial-gradient(circle at 100% 0%, rgba(71,199,255,.14), transparent 20rem), linear-gradient(145deg, rgba(238,255,247,.11), rgba(238,255,247,.035)); }
 .agent-prompt { position: relative; } .agent-prompt button { position: absolute; right: .8rem; top: .8rem; z-index: 2; }
 .agent-prompt pre { padding-top: 3.5rem; }
@@ -112,5 +124,5 @@ button:hover, button.is-copied { border-color: transparent; color: #001411; back
 .footer { padding: 1rem 0 3rem; color: var(--dim); font-size: .9rem; }
 .js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .62s ease, transform .62s ease; }
 .js [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
-@media (max-width: 980px) { .hero, .agent-panel, .privacy-section { grid-template-columns: 1fr; } .signal-stage { min-height: 500px; } .proof-strip, .install-grid, .tool-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } h1 { max-width: 14ch; } }
-@media (max-width: 720px) { .site-header { align-items: flex-start; flex-direction: column; } .nav { width: 100%; overflow-x: auto; padding-bottom: .2rem; } .hero { padding-top: 2rem; } h1 { font-size: clamp(2.7rem, 13vw, 4.2rem); } h2 { font-size: clamp(2.2rem, 10vw, 3.4rem); } .proof-strip, .install-grid, .tool-grid, .privacy-grid { grid-template-columns: 1fr; } .command-pill, .copy-row { grid-template-columns: 1fr; border-radius: 20px; } .hero-actions .button { flex: 1 1 100%; } .signal-stage { min-height: 430px; border-radius: 30px; } .metric-card { width: 11.5rem; } .card-hrv { top: 10%; } .card-load { left: 6%; } .closing { display: grid; } }
+@media (max-width: 980px) { .hero, .agent-panel, .privacy-section { grid-template-columns: 1fr; } .signal-stage { min-height: 500px; } .proof-strip, .install-grid, .tool-grid, .clarity-grid, .outcome-card { grid-template-columns: repeat(2,minmax(0,1fr)); } h1 { max-width: 14ch; } }
+@media (max-width: 720px) { .site-header { align-items: flex-start; flex-direction: column; } .nav { width: 100%; overflow-x: auto; padding-bottom: .2rem; } .hero { padding-top: 2rem; } h1 { font-size: clamp(2.7rem, 13vw, 4.2rem); } h2 { font-size: clamp(2.2rem, 10vw, 3.4rem); } .proof-strip, .install-grid, .tool-grid, .privacy-grid, .clarity-grid, .outcome-card { grid-template-columns: 1fr; } .command-pill, .copy-row { grid-template-columns: 1fr; border-radius: 20px; } .hero-actions .button { flex: 1 1 100%; } .signal-stage { min-height: 430px; border-radius: 30px; } .metric-card { width: 11.5rem; } .card-hrv { top: 10%; } .card-load { left: 6%; } .closing { display: grid; } }

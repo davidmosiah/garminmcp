@@ -8,9 +8,17 @@ No. This is an unofficial open-source project and is not affiliated with Garmin.
 
 Garmin Health API access is partner-approved and oriented toward business/developer programs. This MCP is for personal local Garmin Connect access.
 
+## Do I need to create a Garmin developer app?
+
+No. For this personal local mode, you do not create a client ID, client secret, redirect URI or scopes. Run `setup`, then `auth --install-helper`.
+
 ## Does it store my Garmin password?
 
 No. The auth helper prompts locally and stores Garmin Connect tokens, not your password.
+
+## Why are setup and auth separate?
+
+So non-technical users know exactly when Garmin credentials are requested. `setup` writes MCP config only. `auth --install-helper` starts local Garmin login. `setup --auth` is available for one-shot installs.
 
 ## What data can agents read?
 

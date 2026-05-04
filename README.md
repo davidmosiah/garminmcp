@@ -20,6 +20,8 @@ Garmin has excellent health and training signals, but the official Garmin Health
 
 ## Install
 
+No Garmin developer app is required. `setup` only writes local MCP configuration; it does not ask for your Garmin password.
+
 ```bash
 npx -y garmin-mcp-unofficial setup
 npx -y garmin-mcp-unofficial auth --install-helper
@@ -35,6 +37,14 @@ npx -y garmin-mcp-unofficial doctor --client hermes
 ```
 
 The auth helper prompts locally for Garmin email, password and MFA if needed. This MCP does not store your Garmin password. Tokens are saved under `~/.garmin-mcp/garmin_tokens.json` with user-only permissions.
+
+If macOS/Homebrew Python blocks helper installs, `auth --install-helper` falls back to an isolated virtualenv under `~/.garmin-mcp/venv` instead of asking users to debug Python packaging.
+
+If you want one command to write config and immediately start Garmin login, use:
+
+```bash
+npx -y garmin-mcp-unofficial setup --auth
+```
 
 ## MCP client config
 
@@ -97,6 +107,20 @@ Low-level tools include:
 ## Raw data boundary
 
 This MCP reads processed Garmin Connect data and supported activity detail payloads. It does not provide unrestricted raw accelerometer, gyroscope or continuous device telemetry.
+
+## Human to agent handoff
+
+Paste this into your agent when you want it to install the bridge for you:
+
+```text
+Install the unofficial Garmin MCP server for me.
+Repository: https://github.com/davidmosiah/garminmcp
+Run setup, then auth --install-helper, then doctor.
+If this is Hermes, use setup --client hermes and reload MCP with /reload-mcp or hermes mcp test garmin.
+Never ask me to paste Garmin passwords, tokens or raw private payloads into chat.
+Start with garmin_connection_status, then garmin_daily_summary.
+This is not medical advice.
+```
 
 ## Development
 
