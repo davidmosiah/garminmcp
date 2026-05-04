@@ -6,6 +6,8 @@
 npx -y garmin-mcp-unofficial setup
 ```
 
+This creates local MCP configuration only. It does not ask for your Garmin password.
+
 For Hermes:
 
 ```bash
@@ -19,6 +21,8 @@ npx -y garmin-mcp-unofficial auth --install-helper
 ```
 
 The helper prompts locally for Garmin email, password and MFA when needed. The MCP does not store your Garmin password.
+
+If Python package installation is blocked by Homebrew or PEP 668, the helper creates an isolated virtualenv under `~/.garmin-mcp/venv` automatically.
 
 ## 3. Check readiness
 
@@ -37,3 +41,5 @@ Call garmin_connection_status. If ready, call garmin_daily_summary with response
 ## Notes
 
 Garmin MCP is unofficial. It uses personal Garmin Connect token mode, not official Garmin Health API partner access.
+
+You do not need to create a Garmin developer app, client ID, client secret or redirect URL for this personal local mode.
