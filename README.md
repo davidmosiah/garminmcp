@@ -1,5 +1,10 @@
 # Garmin MCP Unofficial
 
+[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-7C3AED?style=flat-square&logo=anthropic&logoColor=white)](https://modelcontextprotocol.io) [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Provider: Garmin](https://img.shields.io/badge/data-Garmin-007CC3?style=flat-square&logo=garmin&logoColor=white)](https://garmin.com) [![npm version](https://img.shields.io/npm/v/garmin-mcp-unofficial?style=flat-square&color=cb3837&logo=npm)](https://www.npmjs.com/package/garmin-mcp-unofficial)
+
+
+[![CI](https://github.com/davidmosiah/garminmcp/actions/workflows/ci.yml/badge.svg)](https://github.com/davidmosiah/garminmcp/actions/workflows/ci.yml)
+
 Unofficial, local-first Garmin Connect MCP server for AI agents. It lets Claude, Cursor, Windsurf, Hermes, OpenClaw and any MCP-compatible client read processed Garmin signals such as sleep, HRV, Body Battery, stress, training readiness, daily movement and activities.
 
 > Not affiliated with Garmin. Not medical advice. Garmin Connect personal mode is unofficial and can break if Garmin changes private auth or endpoints.
