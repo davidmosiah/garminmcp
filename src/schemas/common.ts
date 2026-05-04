@@ -123,7 +123,7 @@ export const PrivacyAuditOutputSchema = z.object({
   token_path: z.string(),
   stdout_safe: z.boolean(),
   secret_env_vars: z.array(z.string()),
-  required_env_present: z.record(z.boolean()),
+  required_env_present: z.record(z.string(), z.boolean()),
   redacted_key_patterns: z.array(z.string()),
   notes: z.array(z.string())
 }).strict();
@@ -147,7 +147,7 @@ export const CapabilitiesOutputSchema = z.object({
     }).strict()
   }).strict(),
   contribution_paths: z.array(z.string()),
-  links: z.record(z.string())
+  links: z.record(z.string(), z.string())
 }).passthrough();
 
 export const AgentManifestOutputSchema = z.object({
@@ -186,7 +186,7 @@ export const AgentManifestOutputSchema = z.object({
   }).strict(),
   agent_rules: z.array(z.string()),
   troubleshooting: z.array(z.object({ symptom: z.string(), action: z.string() }).strict()),
-  links: z.record(z.string())
+  links: z.record(z.string(), z.string())
 }).strict();
 
 export const ConnectionStatusOutputSchema = z.object({
@@ -195,7 +195,7 @@ export const ConnectionStatusOutputSchema = z.object({
   client: AgentClientSchema.optional(),
   node: z.object({ version: z.string(), supported: z.boolean() }).strict(),
   privacy_mode: PrivacyModeValueSchema,
-  required_env: z.record(z.boolean()),
+  required_env: z.record(z.string(), z.boolean()),
   missing_env: z.array(z.string()),
   redirect_uri: z.string().optional(),
   automatic_auth_supported: z.boolean(),
