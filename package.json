@@ -75,7 +75,7 @@
   "bugs": {
     "url": "https://github.com/davidmosiah/garminmcp/issues"
   },
-  "homepage": "https://garminconnectmcp.vercel.app/",
+  "homepage": "https://wellness.delx.ai/connectors/garmin",
   "mcpName": "io.github.davidmosiah/garminmcp",
   "publishConfig": {
     "access": "public",

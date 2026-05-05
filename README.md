@@ -207,7 +207,8 @@ npx @modelcontextprotocol/inspector node dist/index.js
 ## Links
 
 - npm: <https://www.npmjs.com/package/garmin-mcp-unofficial>
-- Docs site: <https://garminconnectmcp.vercel.app/>
+- Docs site: <https://wellness.delx.ai/connectors/garmin>
+- Legacy docs: <https://garminconnectmcp.vercel.app/>
 - GitHub: <https://github.com/davidmosiah/garminmcp>
 - Delx Wellness registry: <https://github.com/davidmosiah/delx-wellness>
 - Connector quality standard: <https://github.com/davidmosiah/delx-wellness/blob/main/docs/connector-quality-standard.md>
