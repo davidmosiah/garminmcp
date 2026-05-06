@@ -12,6 +12,7 @@ import {
   ConnectionStatusInputSchema,
   ConnectionStatusOutputSchema,
   DailySummaryInputSchema,
+  DataInventoryOutputSchema,
   EndpointDataOutputSchema,
   IdInputSchema,
   PrivacyAuditOutputSchema,
@@ -27,6 +28,7 @@ import {
 import { buildPrivacyAudit } from "../services/audit.js";
 import { buildAgentManifest, formatAgentManifestMarkdown } from "../services/agent-manifest.js";
 import { buildCapabilities } from "../services/capabilities.js";
+import { buildDataInventory, formatInventoryMarkdown } from "../services/inventory.js";
 import { buildConnectionStatus } from "../services/connection-status.js";
 import { getConfig } from "../services/config.js";
 import { bulletList, formatCollection, makeError, makeResponse } from "../services/format.js";
@@ -173,6 +175,21 @@ function registerSimpleEndpointTool(server: McpServer, name: string, title: stri
 }
 
 export function registerGarminTools(server: McpServer): void {
+  server.registerTool("garmin_data_inventory", {
+    title: "Garmin Data Inventory",
+    description: "Inventory supported Garmin data domains, auth scope requirements, privacy boundary and recommended first calls. Does not call Garmin APIs or expose user data.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    outputSchema: DataInventoryOutputSchema.shape,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false
+    }
+  }, async ({ response_format }) => {
+    const inventory = buildDataInventory();
+    return makeResponse(inventory, response_format, formatInventoryMarkdown(inventory));
+  });
   server.registerTool("garmin_agent_manifest", {
     title: "Garmin Agent Manifest",
     description: "Machine-readable install, runtime and client guidance for AI agents. Does not call Garmin or expose secrets.",

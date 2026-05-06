@@ -4,58 +4,32 @@ export const AGENT_CLIENTS = ["generic", "claude", "cursor", "windsurf", "hermes
 export type AgentClientName = typeof AGENT_CLIENTS[number];
 
 export const HERMES_DIRECT_TOOLS = [
-  "mcp_garmin_garmin_agent_manifest",
-  "mcp_garmin_garmin_connection_status",
-  "mcp_garmin_garmin_auth_instructions",
-  "mcp_garmin_garmin_daily_summary",
-  "mcp_garmin_garmin_weekly_summary",
-  "mcp_garmin_garmin_wellness_context",
-  "mcp_garmin_garmin_get_sleep_day",
-  "mcp_garmin_garmin_get_heart_day",
-  "mcp_garmin_garmin_get_body_battery_day",
-  "mcp_garmin_garmin_get_training_readiness_day",
-  "mcp_garmin_garmin_list_activities"
+  "mcp_garmin_garmin_agent_manifest", "mcp_garmin_garmin_auth_instructions", "mcp_garmin_garmin_connection_status",
+  "mcp_garmin_garmin_daily_summary", "mcp_garmin_garmin_data_inventory", "mcp_garmin_garmin_get_body_battery_day",
+  "mcp_garmin_garmin_get_heart_day", "mcp_garmin_garmin_get_sleep_day", "mcp_garmin_garmin_get_training_readiness_day",
+  "mcp_garmin_garmin_list_activities", "mcp_garmin_garmin_weekly_summary", "mcp_garmin_garmin_wellness_context"
 ];
 
 const STANDARD_TOOLS = [
-  "garmin_agent_manifest",
-  "garmin_capabilities",
-  "garmin_auth_instructions",
-  "garmin_connection_status",
-  "garmin_get_profile",
-  "garmin_get_user_settings",
-  "garmin_list_devices",
-  "garmin_get_primary_training_device",
-  "garmin_get_daily_summary",
-  "garmin_get_steps_day",
-  "garmin_get_heart_day",
-  "garmin_get_sleep_day",
-  "garmin_get_stress_day",
-  "garmin_get_body_battery_day",
-  "garmin_get_body_battery_events",
-  "garmin_get_hrv_day",
-  "garmin_get_training_readiness_day",
-  "garmin_get_training_status_day",
-  "garmin_get_respiration_day",
-  "garmin_get_spo2_day",
-  "garmin_get_intensity_minutes_day",
-  "garmin_get_weight_range",
-  "garmin_get_hydration_day",
-  "garmin_list_activities",
-  "garmin_get_activity",
-  "garmin_get_activity_details",
-  "garmin_get_activity_splits",
-  "garmin_get_activity_weather",
-  "garmin_get_activity_hr_zones",
-  "garmin_daily_summary",
-  "garmin_weekly_summary",
-  "garmin_wellness_context",
-  "garmin_privacy_audit",
-  "garmin_cache_status",
-  "garmin_disconnect_local"
+  "garmin_agent_manifest", "garmin_auth_instructions", "garmin_cache_status",
+  "garmin_capabilities", "garmin_connection_status", "garmin_daily_summary",
+  "garmin_data_inventory", "garmin_disconnect_local", "garmin_get_activity",
+  "garmin_get_activity_details", "garmin_get_activity_hr_zones", "garmin_get_activity_splits",
+  "garmin_get_activity_weather", "garmin_get_body_battery_day", "garmin_get_body_battery_events",
+  "garmin_get_daily_summary", "garmin_get_heart_day", "garmin_get_hrv_day",
+  "garmin_get_hydration_day", "garmin_get_intensity_minutes_day", "garmin_get_primary_training_device",
+  "garmin_get_profile", "garmin_get_respiration_day", "garmin_get_sleep_day",
+  "garmin_get_spo2_day", "garmin_get_steps_day", "garmin_get_stress_day",
+  "garmin_get_training_readiness_day", "garmin_get_training_status_day", "garmin_get_user_settings",
+  "garmin_get_weight_range", "garmin_list_activities", "garmin_list_devices",
+  "garmin_privacy_audit", "garmin_weekly_summary", "garmin_wellness_context"
 ];
 
-const RESOURCES = ["garmin://agent-manifest", "garmin://capabilities", "garmin://profile", "garmin://latest/activity", "garmin://summary/daily", "garmin://summary/weekly"];
+const RESOURCES = [
+  "garmin://agent-manifest", "garmin://capabilities", "garmin://inventory",
+  "garmin://latest/activity", "garmin://profile", "garmin://summary/daily",
+  "garmin://summary/weekly"
+];
 
 export function parseAgentClientName(value: string): AgentClientName {
   return AGENT_CLIENTS.includes(value as AgentClientName) ? value as AgentClientName : "generic";
@@ -81,7 +55,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
       secret_storage: "Garmin password is requested only by the local auth helper and is not saved by this MCP.",
       caveat: GARMIN_CONNECT_PERSONAL_BOUNDARY
     },
-    recommended_first_calls: ["garmin_connection_status", "garmin_wellness_context", "garmin_daily_summary", "garmin_weekly_summary"],
+    recommended_first_calls: ["garmin_connection_status", "garmin_data_inventory", "garmin_wellness_context", "garmin_daily_summary", "garmin_weekly_summary"],
     standard_tools: STANDARD_TOOLS,
     resources: RESOURCES,
     hermes: {
@@ -97,7 +71,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
       doctor_command: "npx -y garmin-mcp-unofficial doctor --client hermes --json"
     },
     agent_rules: [
-      "Call garmin_connection_status before Garmin data tools.",
+      "Call garmin_connection_status and garmin_data_inventory before Garmin data tools.",
       "If setup is incomplete, guide the user through setup, auth --install-helper and doctor instead of guessing token state.",
       "Treat Garmin health data as sensitive. Do not expose raw payloads unless the user asks for raw mode.",
       "Do not ask users to paste Garmin passwords or tokens into agent chat. Run local auth instead.",

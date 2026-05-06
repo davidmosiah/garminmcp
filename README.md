@@ -103,6 +103,7 @@ This package reads processed Garmin Connect data via the unofficial personal-tok
 **Start with these:**
 
 - `garmin_connection_status` — verify local setup before calling Garmin Connect
+- `garmin_data_inventory` — inventory supported data domains, scopes, privacy modes and recommended first calls without calling Garmin APIs.
 - `garmin_daily_summary` — daily readiness, sleep, load, action candidates
 - `garmin_weekly_summary` — scorecard, bottlenecks, next-week plan
 
