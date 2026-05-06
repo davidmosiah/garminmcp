@@ -5,8 +5,11 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Provider: Garmin](https://img.shields.io/badge/data-Garmin-007CC3?style=flat-square&logo=garmin&logoColor=white)](https://garmin.com)
 [![npm version](https://img.shields.io/npm/v/garmin-mcp-unofficial?style=flat-square&color=cb3837&logo=npm)](https://www.npmjs.com/package/garmin-mcp-unofficial)
+[![GitHub stars](https://img.shields.io/github/stars/davidmosiah/garminmcp?style=flat-square&logo=github)](https://github.com/davidmosiah/garminmcp/stargazers)
+[![npm downloads](https://img.shields.io/npm/dm/garmin-mcp-unofficial?style=flat-square&color=0ea5a3&logo=npm)](https://www.npmjs.com/package/garmin-mcp-unofficial)
 [![CI](https://github.com/davidmosiah/garminmcp/actions/workflows/ci.yml/badge.svg)](https://github.com/davidmosiah/garminmcp/actions/workflows/ci.yml)
 [![Delx Wellness](https://img.shields.io/badge/part%20of-Delx%20Wellness-0ea5a3?style=flat-square)](https://github.com/davidmosiah/delx-wellness)
+[![Agent-ready MCP](https://img.shields.io/badge/agent--ready-MCP-0ea5a3?style=flat-square)](https://wellness.delx.ai/connectors/garmin)
 
 **Local-first MCP server that connects AI agents to your Garmin sleep, HRV, Body Battery, stress, training readiness and activities.**
 
@@ -15,6 +18,8 @@
 Built by [David Mosiah](https://github.com/davidmosiah) for people who use Claude, Cursor, Hermes, OpenClaw or other MCP-compatible agents to think about training, sleep and recovery — without copy-pasting numbers from the Garmin Connect app.
 
 Part of [Delx Wellness](https://github.com/davidmosiah/delx-wellness), a registry of local-first wellness MCP connectors.
+
+> If this connector helps your agent workflow, please star the repo. Stars make the project easier for other AI builders to discover and help Delx keep shipping local-first wellness infrastructure.
 
 ## Why this exists
 
