@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { buildDailySummary, buildWeeklySummary } from '../dist/services/summary.js';
-import { buildWellnessContext } from '../dist/services/context.js';
+import { buildWellnessContext, formatWellnessContextMarkdown } from '../dist/services/context.js';
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -64,10 +64,16 @@ assert.ok(weekly.diagnostic.bottlenecks.length >= 1);
 
 const context = await buildWellnessContext(fakeClient, { days: 7, timezone: 'UTC' });
 assert.equal(context.source, 'garmin');
+assert.equal(context.context_contract_version, 'delx-wellness-context/v1');
+assert.equal(context.context_type, 'wellness_context');
+assert.equal(context.recommended_handoff.tool, 'exercise_catalog_recommend_session');
 assert.equal(context.readiness_score, 72);
 assert.equal(context.sleep_score, 86);
 assert.equal(context.body_battery, 54);
 assert.equal(context.recent_training_load, 'normal');
 assert.ok(context.notes.some((note) => /Body Battery/i.test(note)));
+const contextMarkdown = formatWellnessContextMarkdown(context);
+assert.ok(contextMarkdown.includes('context_type'));
+assert.ok(contextMarkdown.includes('exercise_catalog_recommend_session'));
 
 console.log(JSON.stringify({ ok: true, daily: daily.kind, weekly: weekly.kind }, null, 2));
