@@ -219,6 +219,115 @@ export function registerGarminTools(server: McpServer): void {
     }));
   });
 
+  server.registerTool("garmin_quickstart", {
+    title: "Garmin Quickstart",
+    description:
+      "Personalized 3-step setup walkthrough for the human user. Adapts to current state (env vars set? token present? what's next?). Call this first when the user asks 'how do I connect Garmin?'",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const config = getConfig();
+    const status = await buildConnectionStatus();
+    const hasCredentials = Boolean(status.has_credentials);
+    const hasToken = Boolean(status.token_present);
+    const steps = [
+      {
+        step: 1,
+        title: hasCredentials ? "(done) Garmin credentials configured" : "Configure Garmin Connect credentials",
+        action: hasCredentials
+          ? "GARMIN_USERNAME / GARMIN_PASSWORD are set (or stored locally via setup)."
+          : "Run `garmin-mcp-server setup` to store credentials locally, OR set GARMIN_USERNAME and GARMIN_PASSWORD env vars.",
+        done: hasCredentials,
+      },
+      {
+        step: 2,
+        title: hasToken ? "(done) Local Garmin token present" : "Run the local auth helper",
+        action: hasToken
+          ? `Tokens stored at ${config.tokenPath}. Auto-refresh handled by the connector.`
+          : "Run `garmin-mcp-server auth --install-helper`. The helper does the unofficial Garmin Connect auth locally (handles MFA when needed). Stores tokens user-only.",
+        done: hasToken,
+      },
+      {
+        step: 3,
+        title: "Verify with the agent",
+        action: "Call garmin_connection_status, then garmin_daily_summary or garmin_wellness_context. Pair with wellness-nourish/cycle-coach/cgm for full coaching.",
+        example: hasToken
+          ? "garmin_wellness_context() → Body Battery + sleep + training readiness handoff."
+          : "Until step 2 is done, data tools surface 'auth required' messages.",
+        done: false,
+      },
+    ];
+    const payload = {
+      ok: true,
+      ready: hasCredentials && hasToken,
+      steps,
+      next: steps.find((s) => !s.done) ?? steps[steps.length - 1],
+      cross_connector_hints: [
+        "Pair Garmin Body Battery + wellness-nourish for energy-aware meal coaching.",
+        "Pair Garmin women's health + wellness-cycle-coach for phase-aware load adjustments.",
+        "Pair Garmin training readiness + wellness-cgm-mcp for metabolic-stress detection.",
+      ],
+    };
+    return makeResponse(payload, response_format, bulletList("Garmin Quickstart", {
+      ready: payload.ready,
+      next: payload.next.title,
+    }));
+  });
+
+  server.registerTool("garmin_demo", {
+    title: "Garmin Demo",
+    description:
+      "Returns realistic example payloads of garmin_daily_summary, garmin_wellness_context, and garmin_get_body_battery_day so agents see the contract before any real Garmin Connect call.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const payload = {
+      ok: true,
+      is_demo: true,
+      sample: {
+        garmin_daily_summary: {
+          date: today,
+          steps: 8420,
+          floors_climbed: 12,
+          active_calories: 540,
+          resting_heart_rate: 56,
+          stress_avg: 28,
+          body_battery_high: 84,
+          body_battery_low: 23,
+          sleep_score: 79,
+          sleep_duration_min: 432,
+        },
+        garmin_wellness_context: {
+          window: "last_24h",
+          body_battery_now: 41,
+          training_readiness: "moderate",
+          stress_avg: 28,
+          sleep_score: 79,
+          recommendation: "Body Battery moderate, training readiness moderate. Tackle a Z2 endurance session today; save threshold work for tomorrow when battery should rebuild.",
+        },
+        garmin_get_body_battery_day: {
+          date: today,
+          high: 84,
+          low: 23,
+          end_of_day: 41,
+          discharge_events: 3,
+          recharge_events: 2,
+        },
+      },
+      notes: [
+        "All sample data is synthetic; tagged with is_demo=true.",
+        "Real calls return live data from Garmin Connect after local auth.",
+      ],
+    };
+    return makeResponse(payload, response_format, bulletList("Garmin Demo", {
+      is_demo: true,
+      body_battery_now: 41,
+      training_readiness: "moderate",
+      recommendation: payload.sample.garmin_wellness_context.recommendation,
+    }));
+  });
+
   server.registerTool("garmin_auth_instructions", {
     title: "Garmin Auth Instructions",
     description: "Explain the local Garmin Connect authentication flow without asking the user to paste secrets into an agent.",

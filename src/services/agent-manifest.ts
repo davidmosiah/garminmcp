@@ -13,7 +13,7 @@ export const HERMES_DIRECT_TOOLS = [
 const STANDARD_TOOLS = [
   "garmin_agent_manifest", "garmin_auth_instructions", "garmin_cache_status",
   "garmin_capabilities", "garmin_connection_status", "garmin_daily_summary",
-  "garmin_data_inventory", "garmin_disconnect_local", "garmin_get_activity",
+  "garmin_data_inventory", "garmin_demo", "garmin_disconnect_local", "garmin_get_activity",
   "garmin_get_activity_details", "garmin_get_activity_hr_zones", "garmin_get_activity_splits",
   "garmin_get_activity_weather", "garmin_get_body_battery_day", "garmin_get_body_battery_events",
   "garmin_get_daily_summary", "garmin_get_heart_day", "garmin_get_hrv_day",
@@ -22,7 +22,7 @@ const STANDARD_TOOLS = [
   "garmin_get_spo2_day", "garmin_get_steps_day", "garmin_get_stress_day",
   "garmin_get_training_readiness_day", "garmin_get_training_status_day", "garmin_get_user_settings",
   "garmin_get_weight_range", "garmin_list_activities", "garmin_list_devices",
-  "garmin_privacy_audit", "garmin_weekly_summary", "garmin_wellness_context"
+  "garmin_privacy_audit", "garmin_quickstart", "garmin_weekly_summary", "garmin_wellness_context"
 ];
 
 const RESOURCES = [

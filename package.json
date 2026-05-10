@@ -1,6 +1,6 @@
 {
   "name": "garmin-mcp-unofficial",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Unofficial local-first Garmin MCP server for AI health, sleep and activity agents.",
   "type": "module",
   "bin": {
@@ -80,8 +80,7 @@
   "homepage": "https://wellness.delx.ai/connectors/garmin",
   "mcpName": "io.github.davidmosiah/garminmcp",
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "main": "dist/index.js"
 }
