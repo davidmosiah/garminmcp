@@ -15,7 +15,8 @@ const expectedTools = [
   'garmin_get_profile', 'garmin_get_respiration_day', 'garmin_get_sleep_day', 'garmin_get_spo2_day',
   'garmin_get_steps_day', 'garmin_get_stress_day', 'garmin_get_training_readiness_day',
   'garmin_get_training_status_day', 'garmin_get_user_settings', 'garmin_get_weight_range', 'garmin_list_activities',
-  'garmin_list_devices', 'garmin_privacy_audit', 'garmin_quickstart', 'garmin_weekly_summary', 'garmin_wellness_context'
+  'garmin_list_devices', 'garmin_onboarding', 'garmin_privacy_audit', 'garmin_profile_get',
+  'garmin_profile_update', 'garmin_quickstart', 'garmin_weekly_summary', 'garmin_wellness_context'
 ];
 
 const expectedResources = [

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 - 2026-05-11
+
+- Add shared Delx wellness profile support, vendored from `delx-wellness/lib/profile-store.ts` into `src/services/profile-store.ts` (no new npm deps; Node built-ins only).
+- Add `garmin_profile_get` tool — read the shared profile (`~/.delx-wellness/profile.json`), returns summary, missing_critical fields and storage_path. Read-only.
+- Add `garmin_profile_update` tool — patch the shared profile; requires `explicit_user_intent=true`. Rejects any field that looks like a secret (oauth/token/secret/password/cookie/refresh/api_key/session).
+- Add `garmin_onboarding` tool — return the 11-question onboarding flow (`en` or `pt-BR`) plus current profile state and missing critical fields. Read-only.
+- Add `garmin-mcp-server onboarding` CLI command — print the onboarding flow JSON (and a TTY-friendly Markdown summary when stderr is a TTY).
+- `recommended_first_calls` now leads with `garmin_profile_get` so agents check the shared profile state before walking quickstart.
+- Auto-migration from Hermes (`~/.hermes/profiles/delx-wellness/wellness-profile.json`) and OpenClaw (`~/.openclaw-delx-wellness/workspace/wellness-profile.json`) legacy paths to the canonical `~/.delx-wellness/profile.json`.
+- Tool count: 38 → 41.
+
 ## 0.1.4
 
 - Fixed agent-facing docs links to use `https://garminconnectmcp.vercel.app/`.
